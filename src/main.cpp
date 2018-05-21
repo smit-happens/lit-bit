@@ -3,16 +3,25 @@
 #include <Arduino.h>
 
 
-// the setup function runs once when you press reset or power the board
-void setup() {
-    // initialize digital pin LED_BUILTIN as an output.
-    pinMode(LED_BUILTIN, OUTPUT);
-}
+int main(void)
+{
+    //initialize board for arduino functionality
+    init();
 
-// the loop function runs over and over again forever
-void loop() {
-    digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-    delay(100);                       // wait for a second
-    digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
-    delay(100);                       // wait for a second
+    //attach USB for our processor
+    #ifdef USBCON
+        USBDevice.attach();
+    #endif
+
+    pinMode(LED_BUILTIN, OUTPUT);
+
+    while(1)
+    {
+        digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
+        delay(100);                       // wait for a second
+        digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
+        delay(100);                       // wait for a second
+    }
+
+    return 0;
 }
