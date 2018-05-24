@@ -2,6 +2,11 @@
 
 #include <Arduino.h>
 
+//AVR library imports
+#include <avr/sleep.h>
+#include <avr/interrupt.h>
+#include <avr/power.h>
+
 
 int main(void)
 {
@@ -13,14 +18,24 @@ int main(void)
         USBDevice.attach();
     #endif
 
-    pinMode(LED_BUILTIN, OUTPUT);
 
     while(1)
     {
-        digitalWrite(LED_BUILTIN, HIGH);   // turn the LED on (HIGH is the voltage level)
-        delay(100);                       // wait for a second
-        digitalWrite(LED_BUILTIN, LOW);    // turn the LED off by making the voltage LOW
-        delay(100);                       // wait for a second
+        // power_all_disable();
+
+        //set the desired sleep mode
+        set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+
+        //stop interrupts (execute atomically)
+        cli();
+
+        //enable sleep mode by setting the sleep bit
+        sleep_enable();
+
+        //execute the sleep instruction and actually go to sleep
+        sleep_cpu();
+
+        // clock_prescale_set(clock_div_2);
     }
 
     return 0;
