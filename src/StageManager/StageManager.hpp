@@ -64,12 +64,7 @@ private:
     void processCooling(uint8_t* taskFlags);
     void processDash(uint8_t* taskFlags);
     void processGlcd(uint8_t* taskFlags);
-    void processImd(uint8_t* taskFlags);
-    void processOrion(uint8_t* taskFlags);
     void processPedal(uint32_t* eventFlags, uint8_t* taskFlags);
-    void processSdCard(uint8_t* taskFlags);
-    void processUnitek(uint8_t* taskFlags);
-    void processBatlog(uint8_t* taskFlags);
 
 
     //for making sure that all the stages except the currently executing one needs to be reconfigured
