@@ -24,9 +24,9 @@ public:
      * getDate()
      * getTime()
      * getDateTime()
-     * 
-     * 
      */
+
+    //TODO: make alarm handling functions for the RTC
 
 private:
 

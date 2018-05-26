@@ -1,7 +1,7 @@
 /**  Manages the event handling functions in the superloop
  *
  * StageManager.cpp
- * Created 1-28-18 By: Smitty
+ * Created 05-24-18 By: Smitty
  *
  * A longer description.
  */
@@ -24,14 +24,8 @@ StageManager::StageManager(void)
 
     timerList = new Timer[TIMER_NUM];
     timerList[0].limit = POLL_TIME_GLCD;
-    timerList[1].limit = POLL_TIME_SDCARD;
-    timerList[2].limit = POLL_TIME_PEDAL;
-    timerList[3].limit = POLL_TIME_ORION;
     
     timerList[0].TFmask = TIMER_F_GLCD;
-    timerList[1].TFmask = TIMER_F_SDCARD;
-    timerList[2].TFmask = TIMER_F_PEDAL;
-    timerList[3].TFmask = TIMER_F_ORION;
 
     //initializing the variables in the Timer array
     for(int i = 0; i < TIMER_NUM; i++) 
@@ -175,86 +169,55 @@ void StageManager::configureStage(void)
  * @param  taskFlags: 
  * @retval 
  */
-Stage StageManager::processStage(Priority urgencyLevel, uint32_t* eventFlags, uint8_t* taskFlags)
+Stage StageManager::processStage(uint32_t* eventFlags, uint8_t* taskFlags)
 {
     configureStage();
     
     //if any of the processing functions change the stage, we don't want it affecting the other processing events
     changeStage = currentStage;
 
-    switch(urgencyLevel)
+
+
+    if(*eventFlags & EF_SHUTDOWN)
     {
-        case PRIORITY_CRITICAL:
-        {
-            if(*eventFlags & EF_SHUTDOWN)
-            {
-                shutdown();
-            }
-        }
-        break;
+        shutdown();
+    }
 
+
+    if(*eventFlags & EF_CAN)
+    {
+        processCan(taskFlags);
         
-        case PRIORITY_HIGH:
-        {
-            if(*eventFlags & EF_CAN)
-            {
-                processCan(taskFlags);
-                
-                //clearing the EF so we don't trigger this again
-                *eventFlags &= ~EF_CAN;
-            }
-        }
-        break;
+        //clearing the EF so we don't trigger this again
+        *eventFlags &= ~EF_CAN;
+    }
 
 
-        case PRIORITY_MEDIUM:
-        {
-            if(*eventFlags & EF_COOLING)
-            {
-                processCooling(taskFlags);
-                
-                //clearing the EF so we don't trigger this again
-                *eventFlags &= ~EF_COOLING;
-            }
+    if(*eventFlags & EF_DASH)
+    {
+        processDash(taskFlags);
+
+        //clearing the EF so we don't trigger this again
+        *eventFlags &= ~EF_DASH;
+    }
 
 
-            if(*eventFlags & EF_DASH)
-            {
-                processDash(taskFlags);
+    if(*eventFlags & TIMER_F_PEDAL)
+    {
+        processPedal(eventFlags, taskFlags);
 
-                //clearing the EF so we don't trigger this again
-                *eventFlags &= ~EF_DASH;
-            }
-        }
-        break;
+        *eventFlags &= ~TIMER_F_PEDAL;
+    }
 
 
-        case PRIORITY_LOW:
-        {
-            if(*eventFlags & TIMER_F_PEDAL)
-            {
-                processPedal(eventFlags, taskFlags);
+    if(*eventFlags & TIMER_F_GLCD)
+    {
+        processOled(taskFlags);
+        
+        //clearing the EF so we don't trigger this again
+        *eventFlags &= ~TIMER_F_GLCD;
+    }
 
-                *eventFlags &= ~TIMER_F_PEDAL;
-            }
-
-
-            if(*eventFlags & TIMER_F_GLCD)
-            {
-                processGlcd(taskFlags);
-                
-                //clearing the EF so we don't trigger this again
-                *eventFlags &= ~TIMER_F_GLCD;
-            }
-        }
-        break;
-
-
-        default:
-            //shouldn't get here (for NUM_PRIORITY ENUM)
-        break;
-
-    } //End switch
 
     return changeStage;
 }
@@ -277,20 +240,7 @@ void StageManager::processCan(uint8_t* taskFlags)
  * @note   
  * @retval 
  */
-void StageManager::processCooling(uint8_t* taskFlags)
-{
-    //insert code here that executes for any stage
-
-
-}
-
-
-/** 
- * @brief  
- * @note   
- * @retval 
- */
-void StageManager::processGlcd(uint8_t* taskFlags)
+void StageManager::processOled(uint8_t* taskFlags)
 {
     //glcd view display updating
     // GlcdController::getInstance()->poll(); //will flush buffer if required.

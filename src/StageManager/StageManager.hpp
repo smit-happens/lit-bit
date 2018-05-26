@@ -1,7 +1,7 @@
 /**  Manages the event handling functions in the superloop
  *
  * #include "StageManager.hpp"
- * Created 1-28-18 By: Smitty
+ * Created 05-24-18 By: Smitty
  *
  * A longer description.
  */
@@ -42,7 +42,7 @@ public:
     void configureStage(void);
 
     //handles the excecution of the various stages
-    Stage processStage(Priority urgencyLevel, uint32_t* eventFlags, uint8_t* taskFlags);
+    Stage processStage(uint32_t* eventFlags, uint8_t* taskFlags);
 
 
 private:
@@ -61,9 +61,8 @@ private:
 
     //Processing functions for the various devices
     void processCan(uint8_t* taskFlags);
-    void processCooling(uint8_t* taskFlags);
     void processDash(uint8_t* taskFlags);
-    void processGlcd(uint8_t* taskFlags);
+    void processOled(uint8_t* taskFlags);
     void processPedal(uint32_t* eventFlags, uint8_t* taskFlags);
 
 

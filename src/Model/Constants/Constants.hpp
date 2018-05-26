@@ -1,6 +1,6 @@
 /** Generic constant to be used across all models and constant
  * 
- * Created 3/15/18 By: Joe Maier
+ * Created 05/24/18 By: Smitty
  * 
  */
 

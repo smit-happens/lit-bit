@@ -1,4 +1,10 @@
-//flora8 board from pio library
+/**  flora8 board from pio library
+ *
+ * main.cpp
+ * Created 05-24-17 By: Smitty
+ *
+ * A longer description.
+ */
 
 #include <Arduino.h>
 
@@ -6,6 +12,19 @@
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 #include <avr/power.h>
+
+#include "StageManager/StageManager.hpp"
+
+
+//global variable that all the ISRs will flag for their respective event to run
+volatile uint32_t globalEventFlags = 0;
+uint8_t globalTaskFlags [NUM_DEVICES] = { 0 };
+
+
+//Start of ISR declarations
+void timerISR() {
+    globalEventFlags        |= EF_TIMER;
+}
 
 
 int main(void)
@@ -33,24 +52,64 @@ int main(void)
     delay(5);
 
 
-    while(1)
-    {
-        // power_all_disable();
+    // power_all_disable();
 
-        //set the desired sleep mode
-        set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+    //set the desired sleep mode
+    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 
-        //stop interrupts (execute atomically)
-        cli();
+    //stop interrupts (execute atomically)
+    cli();
 
-        //enable sleep mode by setting the sleep bit
-        sleep_enable();
+    //enable sleep mode by setting the sleep bit
+    sleep_enable();
 
-        //execute the sleep instruction and actually go to sleep
-        sleep_cpu();
+    //execute the sleep instruction and actually go to sleep
+    sleep_cpu();
 
-        // clock_prescale_set(clock_div_2);
-    }
+    // clock_prescale_set(clock_div_2);
+
+
+    // //local instance of the Stage manager class
+    // StageManager localStage = StageManager();
+
+    // //initialize the local and timer event flag variables
+    // uint32_t localEventFlags = 0;
+    // uint32_t timerEventFlags = 0;
+
+    // //initialize task flag array to zero
+    // uint8_t localTaskFlags[NUM_DEVICES] = { 0 };
+
+    // //---------------------------------------------------------------
+    // // Begin main program Super Loop
+    // while(1)
+    // {
+    //     noInterrupts();
+        
+    //     //Volatile operation for transferring flags from ISRs to local main
+    //     localEventFlags |= globalEventFlags;
+    //     globalEventFlags = 0;
+
+    //     interrupts();
+
+        
+    //     //transfering timer event flags to local EF
+    //     localEventFlags |= timerEventFlags;
+
+
+
+    //     localStage.currentStage = localStage.processStage(&localEventFlags, localTaskFlags);
+
+    //     //checking if we need to update the timers
+    //     if(localEventFlags & EF_TIMER)
+    //     {
+    //         //bit shifting the timer Task Flags (TFs) to the upper half of the localEF var
+    //         timerEventFlags |= localStage.processTimers();
+            
+    //         //clearing the EF so we don't trigger this again
+    //         localEventFlags &= ~EF_TIMER;
+    //     }
+
+    // } //end while()
 
     return 0;
 }
