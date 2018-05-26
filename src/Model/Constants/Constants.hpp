@@ -20,14 +20,6 @@ enum msg_type{
     MSG_ERR
 };
 
-enum err_type {
-    ERR_ORION,
-    ERR_IMD,
-    ERR_UNITEK,
-    ERR_TMP,
-    ERR_NONE,
-    ERR_ALL
-};
 
 enum Stage
 {

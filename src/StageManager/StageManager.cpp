@@ -86,7 +86,7 @@ void StageManager::bootTest(uint32_t* eventFlags)
  * @note   
  * @retval None
  */
-void StageManager::shutdown(err_type err)
+void StageManager::shutdown()
 {
 
     //Halt system 
@@ -188,7 +188,7 @@ Stage StageManager::processStage(Priority urgencyLevel, uint32_t* eventFlags, ui
         {
             if(*eventFlags & EF_SHUTDOWN)
             {
-                shutdown(ERR_NONE);
+                shutdown();
             }
         }
         break;

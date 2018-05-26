@@ -18,6 +18,20 @@ int main(void)
         USBDevice.attach();
     #endif
 
+    Serial.begin(9600);
+    while (!Serial) {
+        ; // wait for serial port to connect
+    }
+
+
+    pinMode(LED_BUILTIN, OUTPUT);
+
+    digitalWrite(LED_BUILTIN, HIGH);
+
+    Serial.println("Hello Smitty!");
+
+    delay(5);
+
 
     while(1)
     {

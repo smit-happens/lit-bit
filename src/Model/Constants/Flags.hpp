@@ -47,12 +47,8 @@ enum Priority
 enum DeviceName
 {
     CAN,
-    COOLING,
-    DASH,
     GLCD,
-    ORION,
-    SDCARD,
-    UNITEK,
+    EEPROM,
     NUM_DEVICES //The number of devices, MAINTAIN AT END OF ENUM
 };
 

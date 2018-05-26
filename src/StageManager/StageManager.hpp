@@ -36,7 +36,7 @@ public:
     //Boot for each device
     void bootTest(uint32_t* eventFlags);
 
-    void shutdown(err_type err);
+    void shutdown();
 
     //contains code that is executed once at the beginning of a stage
     void configureStage(void);

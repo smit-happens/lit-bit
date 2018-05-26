@@ -18,18 +18,6 @@
 
 
 /*
-  ____         __      _                      _                   _
- / ___|  __ _ / _| ___| |_ _   _    ___ _   _| |__  ___ _   _ ___| |_ ___ _ __ ___  ___
- \___ \ / _` | |_ / _ \ __| | | |  / __| | | | '_ \/ __| | | / __| __/ _ \ '_ ` _ \/ __|
-  ___) | (_| |  _|  __/ |_| |_| |  \__ \ |_| | |_) \__ \ |_| \__ \ ||  __/ | | | | \__ \
- |____/ \__,_|_|  \___|\__|\__, |  |___/\__,_|_.__/|___/\__, |___/\__\___|_| |_| |_|___/
-                           |___/                        |___/
-*/
-const uint8_t LB_IMD_STATUS        = 28;   //[0,1] Digital Input
-const uint8_t LB_BMS_STATUS        = 29;   //[0,1] Digital Input
-
-
-/*
   ___ ____   ____
  |_ _|___ \ / ___|
   | |  __) | |
@@ -37,8 +25,8 @@ const uint8_t LB_BMS_STATUS        = 29;   //[0,1] Digital Input
  |___|_____|\____|
 
 */
-const uint8_t LB_I2C_SCL           = 57;  //Expansion port
-const uint8_t LB_I2C_SDA           = 56;  //maybe Traction control
+const uint8_t LB_I2C_SCL          = 3;  //Expansion port
+const uint8_t LB_I2C_SDA          = 2;  //maybe Traction control
 
 
 /*
@@ -49,20 +37,41 @@ const uint8_t LB_I2C_SDA           = 56;  //maybe Traction control
  |____/|_|  |___|
                  
 */
-const uint8_t LB_SPI_CS1           = 43;  //To be determined
-const uint8_t LB_SPI_CS0           = 54;  //To be determined
-const uint8_t LB_SPI_SCK           = 53;  //
-const uint8_t LB_SPI_MOSI          = 52;  //
-const uint8_t LB_SPI_MISO          = 51;  //
+const uint8_t LB_SPI_CS0          = 9;  //To be determined
+const uint8_t LB_SPI_SCK          = SCK;  //
+const uint8_t LB_SPI_MOSI         = MOSI;  //
+const uint8_t LB_SPI_MISO         = MISO;  //
 
 
 /*
-   ____ _     ____ ____
-  / ___| |   / ___|  _ \    ___  ___ _ __ ___  ___ _ __
- | |  _| |  | |   | | | |  / __|/ __| '__/ _ \/ _ \ '_ \
- | |_| | |__| |___| |_| |  \__ \ (__| | |  __/  __/ | | |
-  \____|_____\____|____/   |___/\___|_|  \___|\___|_| |_|
+     _    ______  ___
+    / \  |  _ \ \/ / |
+   / _ \ | | | \  /| |
+  / ___ \| |_| /  \| |___
+ /_/   \_\____/_/\_\_____|
 
+*/
+const uint8_t LB_ADXL_INT1        = 1;
+// const uint8_t LB_ADXL_INT2        = NAN;
+
+
+/*
+  ____ _____ ____
+ |  _ \_   _/ ___|
+ | |_) || || |
+ |  _ < | || |___
+ |_| \_\|_| \____|
+
+*/
+const uint8_t LB_RTC_MFP          = 0;
+
+
+/*
+   ___  _     _____ ____
+  / _ \| |   | ____|  _ \
+ | | | | |   |  _| | | | |
+ | |_| | |___| |___| |_| |
+  \___/|_____|_____|____/
 */
 //Data lines
 // SID:     Serial data out
@@ -70,16 +79,11 @@ const uint8_t LB_SPI_MISO          = 51;  //
 // RS/A0:   Data/Command select
 // _RST:    LCD reset
 // _CS:     LCD chip select
-const uint8_t LB_SID               = 8;   //ST7565 display Output
-const uint8_t LB_SCLK              = 9;   //ST7565 display Output
-const uint8_t LB_A0                = 10;  //ST7565 display Output
-const uint8_t LB_RST               = 11;  //ST7565 display Output
-const uint8_t LB_CS                = 12;  //ST7565 display Output
-
-//RGB backlight
-const uint8_t LB_R                 = 7;   //[0,1] PWM Output
-const uint8_t LB_G                 = 6;   //[0,1] PWM Output
-const uint8_t LB_B                 = 4;   //[0,1] PWM Output
+// const uint8_t LB_SID              = 8;   //ST7565 display Output
+// const uint8_t LB_SCLK             = 9;   //ST7565 display Output
+// const uint8_t LB_A0               = 10;  //ST7565 display Output
+// const uint8_t LB_RST              = 11;  //ST7565 display Output
+// const uint8_t LB_CS               = 12;  //ST7565 display Output
 
 
 #endif  //PORTCONSTANTS_HPP
