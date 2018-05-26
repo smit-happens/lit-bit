@@ -6,25 +6,28 @@
  * A longer description.
  */
 
-#include <Arduino.h>
+// #include <Arduino.h>
 
 //AVR library imports
-#include <avr/sleep.h>
-#include <avr/interrupt.h>
-#include <avr/power.h>
+// #include <avr/sleep.h>
+// #include <avr/interrupt.h>
+// #include <avr/power.h>
 
-#include "StageManager/StageManager.hpp"
+//External libraries
+#include <SparkFun_ADXL345.h>
+
+// #include "StageManager/StageManager.hpp"
 
 
 //global variable that all the ISRs will flag for their respective event to run
-volatile uint32_t globalEventFlags = 0;
-uint8_t globalTaskFlags [NUM_DEVICES] = { 0 };
+// volatile uint32_t globalEventFlags = 0;
+// uint8_t globalTaskFlags [NUM_DEVICES] = { 0 };
 
 
-//Start of ISR declarations
-void timerISR() {
-    globalEventFlags        |= EF_TIMER;
-}
+// //Start of ISR declarations
+// void timerISR() {
+//     globalEventFlags        |= EF_TIMER;
+// }
 
 
 int main(void)
@@ -42,29 +45,50 @@ int main(void)
         ; // wait for serial port to connect
     }
 
+    delay(500);
 
+    //status LED
     pinMode(LED_BUILTIN, OUTPUT);
-
     digitalWrite(LED_BUILTIN, HIGH);
 
     Serial.println("Hello Smitty!");
 
+
+    //ADXL initialization
+    ADXL345 adxl = ADXL345();
+
+    // Power on the ADXL345
+    adxl.powerOn();
+
     delay(5);
+
+    double xyz[3];
+
+    adxl.get_Gxyz(xyz);
+
+    Serial.println("x = ");
+    Serial.println(xyz[0]);
+    Serial.println("y = ");
+    Serial.println(xyz[1]);
+    Serial.println("z = ");
+    Serial.println(xyz[2]);
+
+    // adxl.printAllRegister();
 
 
     // power_all_disable();
 
     //set the desired sleep mode
-    set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+    // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 
     //stop interrupts (execute atomically)
-    cli();
+    // cli();
 
     //enable sleep mode by setting the sleep bit
-    sleep_enable();
+    // sleep_enable();
 
     //execute the sleep instruction and actually go to sleep
-    sleep_cpu();
+    // sleep_cpu();
 
     // clock_prescale_set(clock_div_2);
 
@@ -79,10 +103,10 @@ int main(void)
     // //initialize task flag array to zero
     // uint8_t localTaskFlags[NUM_DEVICES] = { 0 };
 
-    // //---------------------------------------------------------------
-    // // Begin main program Super Loop
-    // while(1)
-    // {
+    //---------------------------------------------------------------
+    // Begin main program Super Loop
+    while(1)
+    {}
     //     noInterrupts();
         
     //     //Volatile operation for transferring flags from ISRs to local main

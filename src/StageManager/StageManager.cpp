@@ -25,7 +25,7 @@ StageManager::StageManager(void)
     timerList = new Timer[TIMER_NUM];
     timerList[0].limit = POLL_TIME_GLCD;
     
-    timerList[0].TFmask = TIMER_F_GLCD;
+    timerList[0].TFmask = TIMER_F_OLED;
 
     //initializing the variables in the Timer array
     for(int i = 0; i < TIMER_NUM; i++) 
@@ -193,29 +193,12 @@ Stage StageManager::processStage(uint32_t* eventFlags, uint8_t* taskFlags)
     }
 
 
-    if(*eventFlags & EF_DASH)
-    {
-        processDash(taskFlags);
-
-        //clearing the EF so we don't trigger this again
-        *eventFlags &= ~EF_DASH;
-    }
-
-
-    if(*eventFlags & TIMER_F_PEDAL)
-    {
-        processPedal(eventFlags, taskFlags);
-
-        *eventFlags &= ~TIMER_F_PEDAL;
-    }
-
-
-    if(*eventFlags & TIMER_F_GLCD)
+    if(*eventFlags & TIMER_F_OLED)
     {
         processOled(taskFlags);
         
         //clearing the EF so we don't trigger this again
-        *eventFlags &= ~TIMER_F_GLCD;
+        *eventFlags &= ~TIMER_F_OLED;
     }
 
 
