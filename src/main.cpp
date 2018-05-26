@@ -6,28 +6,28 @@
  * A longer description.
  */
 
-// #include <Arduino.h>
+#include <Arduino.h>
 
 //AVR library imports
-// #include <avr/sleep.h>
-// #include <avr/interrupt.h>
-// #include <avr/power.h>
+#include <avr/sleep.h>
+#include <avr/interrupt.h>
+#include <avr/power.h>
 
 //External libraries
 #include <SparkFun_ADXL345.h>
 
-// #include "StageManager/StageManager.hpp"
+#include "StageManager/StageManager.hpp"
 
 
 //global variable that all the ISRs will flag for their respective event to run
-// volatile uint32_t globalEventFlags = 0;
-// uint8_t globalTaskFlags [NUM_DEVICES] = { 0 };
+volatile uint32_t globalEventFlags = 0;
+uint8_t globalTaskFlags [NUM_DEVICES] = { 0 };
 
 
-// //Start of ISR declarations
-// void timerISR() {
-//     globalEventFlags        |= EF_TIMER;
-// }
+//Start of ISR declarations
+void timerISR() {
+    globalEventFlags        |= EF_TIMER;
+}
 
 
 int main(void)
@@ -60,20 +60,18 @@ int main(void)
     // Power on the ADXL345
     adxl.powerOn();
 
-    delay(5);
-
     double xyz[3];
 
     adxl.get_Gxyz(xyz);
 
-    Serial.println("x = ");
+    Serial.print("x = ");
     Serial.println(xyz[0]);
-    Serial.println("y = ");
+    Serial.print("y = ");
     Serial.println(xyz[1]);
-    Serial.println("z = ");
+    Serial.print("z = ");
     Serial.println(xyz[2]);
 
-    // adxl.printAllRegister();
+    adxl.printAllRegister();
 
 
     // power_all_disable();
@@ -93,47 +91,47 @@ int main(void)
     // clock_prescale_set(clock_div_2);
 
 
-    // //local instance of the Stage manager class
-    // StageManager localStage = StageManager();
+    //local instance of the Stage manager class
+    StageManager localStage = StageManager();
 
-    // //initialize the local and timer event flag variables
-    // uint32_t localEventFlags = 0;
-    // uint32_t timerEventFlags = 0;
+    //initialize the local and timer event flag variables
+    uint16_t localEventFlags = 0;
+    uint8_t timerEventFlags = 0;
 
-    // //initialize task flag array to zero
-    // uint8_t localTaskFlags[NUM_DEVICES] = { 0 };
+    //initialize task flag array to zero
+    uint8_t localTaskFlags[NUM_DEVICES] = { 0 };
 
     //---------------------------------------------------------------
     // Begin main program Super Loop
     while(1)
-    {}
-    //     noInterrupts();
+    {
+        noInterrupts();
         
-    //     //Volatile operation for transferring flags from ISRs to local main
-    //     localEventFlags |= globalEventFlags;
-    //     globalEventFlags = 0;
+        //Volatile operation for transferring flags from ISRs to local main
+        localEventFlags |= globalEventFlags;
+        globalEventFlags = 0;
 
-    //     interrupts();
+        interrupts();
 
         
-    //     //transfering timer event flags to local EF
-    //     localEventFlags |= timerEventFlags;
+        //transfering timer event flags to local EF
+        localEventFlags |= timerEventFlags << 8;
 
 
 
-    //     localStage.currentStage = localStage.processStage(&localEventFlags, localTaskFlags);
+        localStage.currentStage = localStage.processStage(&localEventFlags, localTaskFlags);
 
-    //     //checking if we need to update the timers
-    //     if(localEventFlags & EF_TIMER)
-    //     {
-    //         //bit shifting the timer Task Flags (TFs) to the upper half of the localEF var
-    //         timerEventFlags |= localStage.processTimers();
+        //checking if we need to update the timers
+        if(localEventFlags & EF_TIMER)
+        {
+            //bit shifting the timer Task Flags (TFs) to the upper half of the localEF var
+            timerEventFlags |= localStage.processTimers();
             
-    //         //clearing the EF so we don't trigger this again
-    //         localEventFlags &= ~EF_TIMER;
-    //     }
+            //clearing the EF so we don't trigger this again
+            localEventFlags &= ~EF_TIMER;
+        }
 
-    // } //end while()
+    } //end while()
 
     return 0;
 }

@@ -41,7 +41,7 @@ StageManager::StageManager(void)
  * @note   Might have to be fleshed out more
  * @retval uint32_t with each bit coresponding to which timers went off
  */
-uint32_t StageManager::processTimers(void)
+uint8_t StageManager::processTimers(void)
 {
     //Goes through the array of timers to increment their count and store which ones popped
     for (int i = 0; i < TIMER_NUM; i++)
@@ -67,7 +67,7 @@ uint32_t StageManager::processTimers(void)
  * @note   
  * @retval None
  */
-void StageManager::bootTest(uint32_t* eventFlags)
+void StageManager::bootTest(uint16_t* eventFlags)
 {
 
     currentStage = STAGE_STANDBY;
@@ -169,7 +169,7 @@ void StageManager::configureStage(void)
  * @param  taskFlags: 
  * @retval 
  */
-Stage StageManager::processStage(uint32_t* eventFlags, uint8_t* taskFlags)
+Stage StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
 {
     configureStage();
     

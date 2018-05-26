@@ -31,10 +31,10 @@ public:
     StageManager();
 
     //handles the various timers we'll be using and setting Task Flags (TFs) based on them
-    uint32_t processTimers(void);
+    uint8_t processTimers(void);
 
     //Boot for each device
-    void bootTest(uint32_t* eventFlags);
+    void bootTest(uint16_t* eventFlags);
 
     void shutdown();
 
@@ -42,7 +42,7 @@ public:
     void configureStage(void);
 
     //handles the excecution of the various stages
-    Stage processStage(uint32_t* eventFlags, uint8_t* taskFlags);
+    Stage processStage(uint16_t* eventFlags, uint8_t* taskFlags);
 
 
 private:
@@ -50,11 +50,11 @@ private:
         /* add name string field */
         int count;
         int limit;
-        uint32_t TFmask;
+        uint8_t TFmask;
     };
      
     Timer* timerList;
-    uint32_t timerTF = 0;
+    uint8_t timerTF = 0;
 
     Stage changeStage;
 
@@ -63,7 +63,7 @@ private:
     void processCan(uint8_t* taskFlags);
     void processDash(uint8_t* taskFlags);
     void processOled(uint8_t* taskFlags);
-    void processPedal(uint32_t* eventFlags, uint8_t* taskFlags);
+    void processPedal(uint8_t* eventFlags, uint8_t* taskFlags);
 
 
     //for making sure that all the stages except the currently executing one needs to be reconfigured
