@@ -15,6 +15,7 @@
 
 //External libraries
 #include <SparkFun_ADXL345.h>
+#include <MCP7940.h>
 
 #include "StageManager/StageManager.hpp"
 
