@@ -40,4 +40,4 @@ private:
 };
 
 
-#endif  //OLEDCONTROLLER_HPP
+#endif  //RTCCONTROLLER_HPP
