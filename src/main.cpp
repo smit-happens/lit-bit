@@ -8,27 +8,37 @@
 
 #include <Arduino.h>
 
-//AVR library imports
-#include <avr/sleep.h>
-#include <avr/interrupt.h>
-#include <avr/power.h>
-
 //External libraries
 #include <SparkFun_ADXL345.h>
 #include <MCP7940.h>
 #include <EEPROM24.h>
 
-#include "StageManager/StageManager.hpp"
 
+/**
+ * Function writes a series of uint16_t values to the EEPROM
+ * from the data array. Length of array is specified by the len parameter.
+ * All writing is assumed to occur at EEPROM storage address 0x0.
+ * Any existing data should be overwritten.
+ */
+void writeDataToEEPROM(EEPROM24* eeprom, uint16_t* data, uint16_t len)
+{
+    for(uint16_t i = 0; i < len; i++)
+    {
+        eeprom->write(i, data[i]); 
+        Serial.println();
+    }
+}
 
-//global variable that all the ISRs will flag for their respective event to run
-volatile uint32_t globalEventFlags = 0;
-uint8_t globalTaskFlags [NUM_DEVICES] = { 0 };
-
-
-//Start of ISR declarations
-void timerISR() {
-    globalEventFlags        |= EF_TIMER;
+/**
+ * Function reads a sequence of uint16_t values from the EEPROM
+ * and stores the result in the buffer array. Length of buffer is
+ * specified by the len parameter. All reads are assumed to begin at EEPROM storage
+ * address 0x0.
+ */
+void readDataFromEEPROM(EEPROM24* eeprom, uint16_t* buffer, uint16_t len)
+{
+    for(uint16_t i = 0; i < len; i++)
+        buffer[i] = eeprom->read(i);
 }
 
 
@@ -42,144 +52,133 @@ int main(void)
         USBDevice.attach();
     #endif
 
+    //start the USB serial connection speed
     Serial.begin(9600);
     while (!Serial) {
         ; // wait for serial port to connect
     }
 
-    delay(500);
-
     //status LED
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
+  
 
-    Serial.println("Hello Smitty!");
-
-
+    /**
+     * Configure the ADXL345
+     */
+    
     //ADXL initialization
     ADXL345 adxl = ADXL345();
-
-    //RTC class init
-    MCP7940_Class MCP7940 = MCP7940_Class();
-
-    //EEPROM class init
-    EEPROM24 eeprom = EEPROM24();
-
-
+    
     // Power on the ADXL345
     adxl.powerOn();
 
-    //ADXL testing code
-
+    //array to store x/y/z readings
     int xyz[3];
 
-    adxl.readAccel(xyz);
 
-    Serial.print("x = ");
-    Serial.println(xyz[0]);
-    Serial.print("y = ");
-    Serial.println(xyz[1]);
-    Serial.print("z = ");
-    Serial.println(xyz[2]);
-    
-    // adxl.printAllRegister();
+    /**
+     * Initialize configuration data for the RTC. Modify
+     * the contents of the initConfig object such that the
+     * RTC will begin with the correct values
+     */
+    //RTC class init
+    MCP7940_Class MCP7940 = MCP7940_Class();
 
-
-    //RTC testing code
-
-    MCP7940.begin();         //start the RTC
+    //start the RTC
+    MCP7940.begin();
     Serial.println(F("MCP7940 initialized."));
-    while (!MCP7940.deviceStatus()) {                                           // Turn oscillator on if necessary  //
+
+    // Turn oscillator on if necessary
+    while (!MCP7940.deviceStatus()) {
         Serial.println(F("Oscillator is off, turning it on."));
         MCP7940.deviceStart();
-
-    } // of while the oscillator is off
-    MCP7940.adjust();                                                           // Set to library compile Date/Time //
-    
-    Serial.println(MCP7940.now().month());
-    Serial.println(MCP7940.now().day());
-    Serial.println(MCP7940.now().year());
-
-
-    //EEPROM testing
-
-    // example: bytes to be read with a single loop
-    #define READ_BYTES 32
-
-    unsigned int curr_addr = 0;
-
-    Serial.print("eeprom[");
-    Serial.print(curr_addr, HEX);
-    Serial.println("]:");
-    
-    // eeprom read loop
-    for(int i = 0; i < READ_BYTES; i++) {
-        byte re = (byte) eeprom.read(curr_addr);
-        
-        Serial.print(re, HEX);
-        Serial.print(' ');
-    
-        curr_addr += 1;
     }
-  
 
-    // power_all_disable();
-
-    //set the desired sleep mode
-    // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-
-    //stop interrupts (execute atomically)
-    // cli();
-
-    //enable sleep mode by setting the sleep bit
-    // sleep_enable();
-
-    //execute the sleep instruction and actually go to sleep
-    // sleep_cpu();
-
-    // clock_prescale_set(clock_div_2);
+    // Set to library compile Date/Time
+    MCP7940.adjust();
 
 
-    //local instance of the Stage manager class
-    StageManager localStage = StageManager();
-
-    //initialize the local and timer event flag variables
-    uint16_t localEventFlags = 0;
-    uint8_t timerEventFlags = 0;
-
-    //initialize task flag array to zero
-    uint8_t localTaskFlags[NUM_DEVICES] = { 0 };
+    /**
+     * Initialize the EEPROM
+     */
+    //EEPROM class init
+    EEPROM24 eeprom = EEPROM24();
+    
 
     //---------------------------------------------------------------
     // Begin main program Super Loop
     while(1)
     {
-        noInterrupts();
-        
-        //Volatile operation for transferring flags from ISRs to local main
-        localEventFlags |= globalEventFlags;
-        globalEventFlags = 0;
+        /**
+         * Test #1: Try to read from the ADXL345 and
+         * print out the results
+         */
+        // readADXL(&currentReading);
 
-        interrupts();
+        //polling the Accelerometer for the x/y/z data
+        adxl.readAccel(xyz);
 
-        
-        //transfering timer event flags to local EF
-        localEventFlags |= timerEventFlags << 8;
+        Serial.print(xyz[0]);
+        Serial.print("\t");
+        Serial.print(xyz[1]);
+        Serial.print("\t");
+        Serial.println(xyz[2]);
 
 
+        /**
+         * Test #2: Try to read out the time of day and
+         * print out the results
+         */
+        // readRTC(&currentDateTime);
+        DateTime rightNow = MCP7940.now();      //reading the current time from the RTC
+        Serial.print(rightNow.month());
+        Serial.print("/");
+        Serial.print(rightNow.day());
+        Serial.print("/");
+        Serial.print(rightNow.year());
+        Serial.print("\t");
+        Serial.print(rightNow.hour());
+        Serial.print(":");
+        Serial.print(rightNow.minute());
+        Serial.print(":");
+        Serial.println(rightNow.second());
 
-        localStage.currentStage = localStage.processStage(&localEventFlags, localTaskFlags);
-
-        //checking if we need to update the timers
-        if(localEventFlags & EF_TIMER)
+        /**
+        * Test #3: Try to write and read back some
+        * random data
+        */
+        uint16_t array[5];
+        for(int i=0;i<5;i++)
         {
-            //bit shifting the timer Task Flags (TFs) to the upper half of the localEF var
-            timerEventFlags |= localStage.processTimers();
-            
-            //clearing the EF so we don't trigger this again
-            localEventFlags &= ~EF_TIMER;
+            array[i] = random();
+        }
+        writeDataToEEPROM(&eeprom, array, 5);
+
+        uint16_t buffer[5];
+
+        readDataFromEEPROM(&eeprom, buffer, 5);
+        
+        bool testPass = true;
+        for(int i=0;i<5;i++)
+        {
+            if(buffer[i]!=array[i])
+            {
+                testPass=false;
+            }
+        }
+        
+        if(testPass)
+        {
+            Serial.println("EEPROM Test Passed.");
+        }
+        else
+        {
+            Serial.println("EEPROM Test Failed.");
         }
 
+        delay(1000);
+        
     } //end while()
 
     return 0;
