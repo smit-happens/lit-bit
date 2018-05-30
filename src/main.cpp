@@ -22,11 +22,25 @@
  */
 void writeDataToEEPROM(EEPROM24* eeprom, uint16_t* data, uint16_t len)
 {
-    for(uint16_t i = 0; i < len; i++)
-    {
-        eeprom->write(i, data[i]); 
-        Serial.println();
-    }
+    // for(int i = 0; i < len; i++)
+    // {
+    //     byte dataH = (data[i] & 0xFF00) >> 2;
+    //     byte dataL = data[i] & 0x00FF;
+
+    //     Serial.println(data[i], HEX);
+    //     Serial.println(dataH, HEX);
+    //     Serial.println(dataL, HEX);
+
+    //     Serial.println(eeprom->write(i*2, dataH));
+    //     Serial.println(eeprom->write(i*2 +1, dataL));
+
+    //     Serial.println(eeprom->read(i*2));
+    //     Serial.println(eeprom->read(i*2 +1));
+    // }
+
+    // Serial.println(eeprom->write(0, 0xBE));    
+    // Serial.println((byte)eeprom->read(0));
+    
 }
 
 /**
@@ -37,8 +51,10 @@ void writeDataToEEPROM(EEPROM24* eeprom, uint16_t* data, uint16_t len)
  */
 void readDataFromEEPROM(EEPROM24* eeprom, uint16_t* buffer, uint16_t len)
 {
-    for(uint16_t i = 0; i < len; i++)
-        buffer[i] = eeprom->read(i);
+    // for(int i = 0; i < len; i++)
+    // {
+    //     buffer[i] |= (uint16_t)eeprom->read(i*2) + (uint16_t)(eeprom->read(i*2 +1) << 2);
+    // }
 }
 
 
@@ -153,6 +169,10 @@ int main(void)
         {
             array[i] = random();
         }
+
+        Serial.println(eeprom.write(0, 0xBE));    
+        Serial.println((byte)eeprom.read(0));
+
         writeDataToEEPROM(&eeprom, array, 5);
 
         uint16_t buffer[5];
