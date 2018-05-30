@@ -16,6 +16,7 @@
 //External libraries
 #include <SparkFun_ADXL345.h>
 #include <MCP7940.h>
+#include <EEPROM24.h>
 
 #include "StageManager/StageManager.hpp"
 
@@ -59,14 +60,20 @@ int main(void)
     ADXL345 adxl = ADXL345();
 
     //RTC class init
-    MCP7940_Class MCP7940;
+    MCP7940_Class MCP7940 = MCP7940_Class();
+
+    //EEPROM class init
+    EEPROM24 eeprom = EEPROM24();
+
 
     // Power on the ADXL345
     adxl.powerOn();
 
-    double xyz[3];
+    //ADXL testing code
 
-    adxl.get_Gxyz(xyz);
+    int xyz[3];
+
+    adxl.readAccel(xyz);
 
     Serial.print("x = ");
     Serial.println(xyz[0]);
@@ -74,28 +81,47 @@ int main(void)
     Serial.println(xyz[1]);
     Serial.print("z = ");
     Serial.println(xyz[2]);
-
+    
     // adxl.printAllRegister();
 
-    while (!MCP7940.begin()) {                                                  // Initialize RTC communications    //
-        Serial.println(F("Unable to find MCP7940M. Checking again in 3s."));      // Show error text                  //
-        delay(3000);                                                              // wait a second                    //
-    } // of loop until device is located
+
+    //RTC testing code
+
+    MCP7940.begin();         //start the RTC
     Serial.println(F("MCP7940 initialized."));
     while (!MCP7940.deviceStatus()) {                                           // Turn oscillator on if necessary  //
-        Serial.println(F("Oscillator is off, turning it on."));                 //                                  //
-        bool deviceStatus = MCP7940.deviceStart();                              // Start oscillator and return state//
-        if (!deviceStatus) {                                                    // If it didn't start               //
-        Serial.println(F("Oscillator did not start, trying again."));           // Show error and                   //
-        delay(1000);                                                            // wait for a second                //
-        } // of if-then oscillator didn't start
+        Serial.println(F("Oscillator is off, turning it on."));
+        MCP7940.deviceStart();
+
     } // of while the oscillator is off
     MCP7940.adjust();                                                           // Set to library compile Date/Time //
     
     Serial.println(MCP7940.now().month());
     Serial.println(MCP7940.now().day());
-    // Serial.println(MCP7940.now().dayOfTheWeek());
     Serial.println(MCP7940.now().year());
+
+
+    //EEPROM testing
+
+    // example: bytes to be read with a single loop
+    #define READ_BYTES 32
+
+    unsigned int curr_addr = 0;
+
+    Serial.print("eeprom[");
+    Serial.print(curr_addr, HEX);
+    Serial.println("]:");
+    
+    // eeprom read loop
+    for(int i = 0; i < READ_BYTES; i++) {
+        byte re = (byte) eeprom.read(curr_addr);
+        
+        Serial.print(re, HEX);
+        Serial.print(' ');
+    
+        curr_addr += 1;
+    }
+  
 
     // power_all_disable();
 
