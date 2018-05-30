@@ -58,6 +58,9 @@ int main(void)
     //ADXL initialization
     ADXL345 adxl = ADXL345();
 
+    //RTC class init
+    MCP7940_Class MCP7940;
+
     // Power on the ADXL345
     adxl.powerOn();
 
@@ -72,8 +75,27 @@ int main(void)
     Serial.print("z = ");
     Serial.println(xyz[2]);
 
-    adxl.printAllRegister();
+    // adxl.printAllRegister();
 
+    while (!MCP7940.begin()) {                                                  // Initialize RTC communications    //
+        Serial.println(F("Unable to find MCP7940M. Checking again in 3s."));      // Show error text                  //
+        delay(3000);                                                              // wait a second                    //
+    } // of loop until device is located
+    Serial.println(F("MCP7940 initialized."));
+    while (!MCP7940.deviceStatus()) {                                           // Turn oscillator on if necessary  //
+        Serial.println(F("Oscillator is off, turning it on."));                 //                                  //
+        bool deviceStatus = MCP7940.deviceStart();                              // Start oscillator and return state//
+        if (!deviceStatus) {                                                    // If it didn't start               //
+        Serial.println(F("Oscillator did not start, trying again."));           // Show error and                   //
+        delay(1000);                                                            // wait for a second                //
+        } // of if-then oscillator didn't start
+    } // of while the oscillator is off
+    MCP7940.adjust();                                                           // Set to library compile Date/Time //
+    
+    Serial.println(MCP7940.now().month());
+    Serial.println(MCP7940.now().day());
+    // Serial.println(MCP7940.now().dayOfTheWeek());
+    Serial.println(MCP7940.now().year());
 
     // power_all_disable();
 
