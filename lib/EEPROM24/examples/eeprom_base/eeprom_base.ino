@@ -10,7 +10,7 @@
 // init eeprom with default address
 EEPROM24 eeprom;
 
-// example: bytes to be read with a single loop
+// example: uint8_ts to be read with a single loop
 #define READ_BYTES 32
 
 // example: using one chip max address is 2^17 => 1024K
@@ -43,7 +43,7 @@ void loop() {
   
   // eeprom read loop
   for(i = 0; i < READ_BYTES; i++) {
-    byte re = (byte) eeprom.read(curr_addr);
+    uint8_t re = (uint8_t) eeprom.read(curr_addr);
     
     Serial.print(re, HEX);
     Serial.print(' ');

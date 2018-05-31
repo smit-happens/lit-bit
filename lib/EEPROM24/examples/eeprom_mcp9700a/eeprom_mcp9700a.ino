@@ -4,12 +4,12 @@
 #define DEBUG
 
 // constants
-const byte apin = A0;
-const byte tc = 10;        // mV/°C
+const uint8_t apin = A0;
+const uint8_t tc = 10;        // mV/°C
 const int t0 = 500;       // mV
 const float res = 4.9;    // mV (5 V / 1024 units =~ 4.9 mV)
 
-const byte ctrl_24fc1025 = B10100000;
+const uint8_t ctrl_24fc1025 = B10100000;
 
 // variables
 int val = 0;
@@ -19,7 +19,7 @@ float temp = 0;
 
 // eeprom
 unsigned int curr_addr = 0x0000;
-byte ee_out = 0;
+uint8_t ee_out = 0;
 
 void setup() {
   // initialize serial communications at 9600 bps:
@@ -49,10 +49,10 @@ int read_eeprom(unsigned int eeprom_addr) {
   i2c_addr = i2c_addr >> 1;
   
   Wire.beginTransmission(i2c_addr);
-  Wire.write( (byte) eeprom_addr >> 8 );
-  Wire.write( (byte) (eeprom_addr && 0x00FF) );
+  Wire.write( (uint8_t) eeprom_addr >> 8 );
+  Wire.write( (uint8_t) (eeprom_addr && 0x00FF) );
   
-  byte i2c_status = Wire.endTransmission();
+  uint8_t i2c_status = Wire.endTransmission();
   
   if( i2c_status == 0 ) {
     
@@ -78,7 +78,7 @@ int read_eeprom(unsigned int eeprom_addr) {
   } 
 }
 
-int write_eeprom(unsigned int eeprom_addr, byte data) {
+int write_eeprom(unsigned int eeprom_addr, uint8_t data) {
   int i2c_addr = ctrl_24fc1025;
   
   if( eeprom_addr > 65535 )
@@ -88,8 +88,8 @@ int write_eeprom(unsigned int eeprom_addr, byte data) {
   i2c_addr = i2c_addr >> 1;
   
   Wire.beginTransmission(i2c_addr);
-  Wire.write( (byte) eeprom_addr >> 8 );
-  Wire.write( (byte) (eeprom_addr && 0x00FF) );
+  Wire.write( (uint8_t) eeprom_addr >> 8 );
+  Wire.write( (uint8_t) (eeprom_addr && 0x00FF) );
   Wire.write( data );
   
   return Wire.endTransmission();  
@@ -121,7 +121,7 @@ void loop() {
   
   // eeprom loop
   for(i = 0; i < 26; i++) {
-    byte re = (byte) read_eeprom(curr_addr);
+    uint8_t re = (uint8_t) read_eeprom(curr_addr);
     
     Serial.print(re, HEX);
     Serial.print(' ');

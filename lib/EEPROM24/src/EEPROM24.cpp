@@ -27,7 +27,7 @@ EEPROM24::EEPROM24()
  * Standard constructor using address and fast flag.
  * It initializes the Wire library.
  */
-EEPROM24::EEPROM24(byte address, bool fast)
+EEPROM24::EEPROM24(uint8_t address, bool fast)
 {
   _address = address;
   _fast = fast;
@@ -46,9 +46,9 @@ EEPROM24::EEPROM24(byte address, bool fast)
  * @param  eeprom_addr [description]
  * @return             [description]
  */
-int EEPROM24::read(unsigned int eeprom_addr)
+int EEPROM24::read(uint16_t eeprom_addr)
 {
-  byte i2c_status = 0;
+  uint8_t i2c_status = 0;
   int i2c_addr = (int) _address;
   int ee_out = 0;
   
@@ -57,12 +57,15 @@ int EEPROM24::read(unsigned int eeprom_addr)
     i2c_addr = i2c_addr | B00001000;    
  
   // seven-bit address
-  i2c_addr = i2c_addr >> 1;
+  // i2c_addr = i2c_addr >> 1;
+
+  //R/~W bit
+  i2c_addr |= B00000001;
   
   // i2c commands
   Wire.beginTransmission(i2c_addr);
-  Wire.write( (byte) eeprom_addr >> 8 );
-  Wire.write( (byte) (eeprom_addr && 0x00FF) );
+  Wire.write( (uint8_t) eeprom_addr >> 8 );
+  Wire.write( (uint8_t) (eeprom_addr && 0x00FF) );
   
   // check status
   i2c_status = Wire.endTransmission();
@@ -85,21 +88,23 @@ int EEPROM24::read(unsigned int eeprom_addr)
  * @param  data        [description]
  * @return             [description]
  */
-int EEPROM24::write(unsigned int eeprom_addr, byte data)
+int EEPROM24::write(uint16_t eeprom_addr, uint8_t data)
 {
-  int i2c_addr = (int) _address;
+  uint8_t i2c_addr = _address;
   
   if( eeprom_addr > 65535 )
-    i2c_addr = i2c_addr | B00001000;    
+    i2c_addr |= B00001000;    
  
   // seven-bit address
   i2c_addr = i2c_addr >> 1;
   
   // i2c commands
   Wire.beginTransmission(i2c_addr);
-  Wire.write( (byte) eeprom_addr >> 8 );
-  Wire.write( (byte) (eeprom_addr && 0x00FF) );
-  Wire.write( data );
+
+  Serial.println("EEPROM library");
+  Serial.println(Wire.write( (uint8_t) eeprom_addr >> 8 ));
+  Serial.println(Wire.write( (uint8_t) (eeprom_addr && 0x00FF) ));
+  Serial.println(Wire.write( data ));
   
   return Wire.endTransmission();  
 }

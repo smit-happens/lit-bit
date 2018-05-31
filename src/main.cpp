@@ -7,55 +7,11 @@
  */
 
 #include <Arduino.h>
+#include <Wire.h>
 
-//External libraries
-#include <SparkFun_ADXL345.h>
-#include <MCP7940.h>
 #include <EEPROM24.h>
 
 
-/**
- * Function writes a series of uint16_t values to the EEPROM
- * from the data array. Length of array is specified by the len parameter.
- * All writing is assumed to occur at EEPROM storage address 0x0.
- * Any existing data should be overwritten.
- */
-void writeDataToEEPROM(EEPROM24* eeprom, uint16_t* data, uint16_t len)
-{
-    // for(int i = 0; i < len; i++)
-    // {
-    //     byte dataH = (data[i] & 0xFF00) >> 2;
-    //     byte dataL = data[i] & 0x00FF;
-
-    //     Serial.println(data[i], HEX);
-    //     Serial.println(dataH, HEX);
-    //     Serial.println(dataL, HEX);
-
-    //     Serial.println(eeprom->write(i*2, dataH));
-    //     Serial.println(eeprom->write(i*2 +1, dataL));
-
-    //     Serial.println(eeprom->read(i*2));
-    //     Serial.println(eeprom->read(i*2 +1));
-    // }
-
-    // Serial.println(eeprom->write(0, 0xBE));    
-    // Serial.println((byte)eeprom->read(0));
-    
-}
-
-/**
- * Function reads a sequence of uint16_t values from the EEPROM
- * and stores the result in the buffer array. Length of buffer is
- * specified by the len parameter. All reads are assumed to begin at EEPROM storage
- * address 0x0.
- */
-void readDataFromEEPROM(EEPROM24* eeprom, uint16_t* buffer, uint16_t len)
-{
-    // for(int i = 0; i < len; i++)
-    // {
-    //     buffer[i] |= (uint16_t)eeprom->read(i*2) + (uint16_t)(eeprom->read(i*2 +1) << 2);
-    // }
-}
 
 
 int main(void)
@@ -79,127 +35,66 @@ int main(void)
     digitalWrite(LED_BUILTIN, HIGH);
   
 
-    /**
-     * Configure the ADXL345
-     */
-    
-    //ADXL initialization
-    ADXL345 adxl = ADXL345();
-    
-    // Power on the ADXL345
-    adxl.powerOn();
-
-    //array to store x/y/z readings
-    int xyz[3];
+    Wire.begin();
+    Wire.setClock(400000L); //set I2C clock to 400kHz
 
 
-    /**
-     * Initialize configuration data for the RTC. Modify
-     * the contents of the initConfig object such that the
-     * RTC will begin with the correct values
-     */
-    //RTC class init
-    MCP7940_Class MCP7940 = MCP7940_Class();
-
-    //start the RTC
-    MCP7940.begin();
-    Serial.println(F("MCP7940 initialized."));
-
-    // Turn oscillator on if necessary
-    while (!MCP7940.deviceStatus()) {
-        Serial.println(F("Oscillator is off, turning it on."));
-        MCP7940.deviceStart();
-    }
-
-    // Set to library compile Date/Time
-    MCP7940.adjust();
-
-
-    /**
-     * Initialize the EEPROM
-     */
     //EEPROM class init
     EEPROM24 eeprom = EEPROM24();
     
 
-    //---------------------------------------------------------------
-    // Begin main program Super Loop
+
+    uint8_t temp = eeprom.read(0);
+
+    Serial.print("Current data: ");
+    Serial.println(temp, HEX);
+
+    temp = 0xDE;
+
+    eeprom.write(0, temp);
+
+    uint8_t newData = eeprom.read(0);
+
+    Serial.print("Current data: ");
+    Serial.println(newData, HEX);
+
+
+    // eeprom.read(0);
+
+    // example: uint8_ts to be read with a single loop
+    #define READ_BYTES 32
+
+    // example: using one chip max address is 2^17 => 1024K
+    #define ADDR_BOUNDARY 131072
+
+    unsigned int curr_addr = 0;
+    
+
     while(1)
     {
-        /**
-         * Test #1: Try to read from the ADXL345 and
-         * print out the results
-         */
-        // readADXL(&currentReading);
-
-        //polling the Accelerometer for the x/y/z data
-        adxl.readAccel(xyz);
-
-        Serial.print(xyz[0]);
-        Serial.print("\t");
-        Serial.print(xyz[1]);
-        Serial.print("\t");
-        Serial.println(xyz[2]);
-
-
-        /**
-         * Test #2: Try to read out the time of day and
-         * print out the results
-         */
-        // readRTC(&currentDateTime);
-        DateTime rightNow = MCP7940.now();      //reading the current time from the RTC
-        Serial.print(rightNow.month());
-        Serial.print("/");
-        Serial.print(rightNow.day());
-        Serial.print("/");
-        Serial.print(rightNow.year());
-        Serial.print("\t");
-        Serial.print(rightNow.hour());
-        Serial.print(":");
-        Serial.print(rightNow.minute());
-        Serial.print(":");
-        Serial.println(rightNow.second());
-
-        /**
-        * Test #3: Try to write and read back some
-        * random data
-        */
-        uint16_t array[5];
-        for(int i=0;i<5;i++)
-        {
-            array[i] = random();
-        }
-
-        Serial.println(eeprom.write(0, 0xBE));    
-        Serial.println((byte)eeprom.read(0));
-
-        writeDataToEEPROM(&eeprom, array, 5);
-
-        uint16_t buffer[5];
-
-        readDataFromEEPROM(&eeprom, buffer, 5);
+        Serial.print("eeprom[");
+        Serial.print(curr_addr, HEX);
+        Serial.println("]:");
         
-        bool testPass = true;
-        for(int i=0;i<5;i++)
-        {
-            if(buffer[i]!=array[i])
-            {
-                testPass=false;
-            }
+        // eeprom read loop
+        for(int i = 0; i < READ_BYTES; i++) {
+            uint8_t re = (uint8_t) eeprom.read(curr_addr);
+            
+            Serial.print(re, HEX);
+            Serial.print(' ');
+        
+            curr_addr += 1;
+
+            if(curr_addr > ADDR_BOUNDARY)
+                curr_addr = 0;
         }
         
-        if(testPass)
-        {
-            Serial.println("EEPROM Test Passed.");
-        }
-        else
-        {
-            Serial.println("EEPROM Test Failed.");
-        }
+        Serial.println(' ');
 
-        delay(1000);
-        
-    } //end while()
+        // wait before the next loop
+        delay(5000);
+    }
+
 
     return 0;
 }

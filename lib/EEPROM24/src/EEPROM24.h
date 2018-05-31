@@ -12,13 +12,13 @@ class EEPROM24
 {
   public:
     EEPROM24();
-    EEPROM24(byte address, bool fast);
-    int read(unsigned int eeprom_addr);
-    int write(unsigned int eeprom_addr, byte data);
-    int read_page();
-    int write_page();
+    EEPROM24(uint8_t address, bool fast);
+    int read(uint16_t eeprom_addr);
+    int write(uint16_t eeprom_addr, uint8_t data);
+    // int read_page();
+    // int write_page();
   private:
-    byte _address;
+    uint8_t _address;
     bool _fast;
 };
 
