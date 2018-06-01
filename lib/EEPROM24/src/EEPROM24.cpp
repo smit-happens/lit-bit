@@ -65,7 +65,7 @@ int EEPROM24::read(uint16_t eeprom_addr)
   // i2c commands
   Wire.beginTransmission(i2c_addr);
   Wire.write( (uint8_t) eeprom_addr >> 8 );
-  Wire.write( (uint8_t) (eeprom_addr && 0x00FF) );
+  Wire.write( (uint8_t) (eeprom_addr & 0x00FF) );
   
   // check status
   i2c_status = Wire.endTransmission();
@@ -96,14 +96,14 @@ int EEPROM24::write(uint16_t eeprom_addr, uint8_t data)
     i2c_addr |= B00001000;    
  
   // seven-bit address
-  i2c_addr = i2c_addr >> 1;
+  // i2c_addr = i2c_addr >> 1;
   
   // i2c commands
   Wire.beginTransmission(i2c_addr);
 
   Serial.println("EEPROM library");
   Serial.println(Wire.write( (uint8_t) eeprom_addr >> 8 ));
-  Serial.println(Wire.write( (uint8_t) (eeprom_addr && 0x00FF) ));
+  Serial.println(Wire.write( (uint8_t) (eeprom_addr & 0x00FF) ));
   Serial.println(Wire.write( data ));
   
   return Wire.endTransmission();  
