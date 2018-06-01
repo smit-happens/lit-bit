@@ -9,8 +9,9 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include <EEPROM24.h>
+// #include <EEPROM24.h>
 
+#define EEPROM24_ADDR B10100000
 
 
 
@@ -39,58 +40,82 @@ int main(void)
     Wire.setClock(400000L); //set I2C clock to 400kHz
 
 
-    //EEPROM class init
-    EEPROM24 eeprom = EEPROM24();
+    //EEPROM read
+    uint8_t i2c_addr = EEPROM24_ADDR;
+    uint16_t addressToRead = 0;
+    uint8_t i2c_status = 0;
+    int ee_out = 0;
+    uint8_t dataToWrite = 0xBE;
     
 
+    // seven-bit address
+    i2c_addr >>= 1;
 
-    uint8_t temp = eeprom.read(0);
-
-    Serial.print("Current data: ");
-    Serial.println(temp, HEX);
-
-    temp = 0xDE;
-
-    eeprom.write(0, temp);
-
-    uint8_t newData = eeprom.read(0);
-
-    Serial.print("Current data: ");
-    Serial.println(newData, HEX);
-
-
-    // eeprom.read(0);
-
-    // example: uint8_ts to be read with a single loop
-    #define READ_BYTES 32
-
-    // example: using one chip max address is 2^17 => 1024K
-    #define ADDR_BOUNDARY 131072
-
-    unsigned int curr_addr = 0;
+    Wire.beginTransmission(i2c_addr);
+    Wire.write( (uint8_t) addressToRead >> 8 );
+    Wire.write( (uint8_t) (addressToRead & 0x00FF) );
     
+    // check status
+    i2c_status = Wire.endTransmission();
+
+    if( i2c_status == 0 ) 
+    {  
+        Wire.requestFrom(i2c_addr, 1);
+
+        while( Wire.available() )
+            ee_out = Wire.read();
+    }
+    else 
+    {  
+        ee_out = -1;
+    } 
+    //end EEPROM read
+
+
+    Serial.print("Current data: ");
+    Serial.println(ee_out, HEX);
+
+
+    //EEPROM Write
+    // i2c commands
+    Wire.beginTransmission(i2c_addr);
+
+    Wire.write( (uint8_t) addressToRead >> 8 );
+    Wire.write( (uint8_t) (addressToRead & 0x00FF) );
+    Wire.write( dataToWrite );
+    
+    Wire.endTransmission();
+    //end EEPROM Write
+
+
+    //EEPROM read
+    delay(5);
+    Wire.beginTransmission(i2c_addr);
+    Wire.write( (uint8_t) addressToRead >> 8 );
+    Wire.write( (uint8_t) (addressToRead & 0x00FF) );
+    
+    // check status
+    i2c_status = Wire.endTransmission();
+
+    if( i2c_status == 0 ) 
+    {  
+        Wire.requestFrom(i2c_addr, 1);
+
+        while( Wire.available() )
+            ee_out = Wire.read();
+    }
+    else 
+    {  
+        ee_out = -1;
+    } 
+    //end EEPROM read
+
+
+    Serial.print("new data: ");
+    Serial.println(ee_out, HEX);
 
     while(1)
     {
-        Serial.print("eeprom[");
-        Serial.print(curr_addr, HEX);
-        Serial.println("]:");
-        
-        // eeprom read loop
-        for(int i = 0; i < READ_BYTES; i++) {
-            uint8_t re = (uint8_t) eeprom.read(curr_addr);
-            
-            Serial.print(re, HEX);
-            Serial.print(' ');
-        
-            curr_addr += 1;
-
-            if(curr_addr > ADDR_BOUNDARY)
-                curr_addr = 0;
-        }
-        
-        Serial.println(' ');
-
         // wait before the next loop
         delay(5000);
     }

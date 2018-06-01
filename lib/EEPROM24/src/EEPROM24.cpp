@@ -57,10 +57,7 @@ int EEPROM24::read(uint16_t eeprom_addr)
     i2c_addr = i2c_addr | B00001000;    
  
   // seven-bit address
-  // i2c_addr = i2c_addr >> 1;
-
-  //R/~W bit
-  i2c_addr |= B00000001;
+  i2c_addr = i2c_addr >> 1;
   
   // i2c commands
   Wire.beginTransmission(i2c_addr);
@@ -96,7 +93,7 @@ int EEPROM24::write(uint16_t eeprom_addr, uint8_t data)
     i2c_addr |= B00001000;    
  
   // seven-bit address
-  // i2c_addr = i2c_addr >> 1;
+  i2c_addr = i2c_addr >> 1;
   
   // i2c commands
   Wire.beginTransmission(i2c_addr);
