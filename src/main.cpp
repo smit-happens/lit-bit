@@ -75,8 +75,8 @@ void readDataFromEEPROM(uint16_t* buffer, uint16_t len)
         Wire.write( (uint8_t) (i*2) >> 8 );
         Wire.write( (uint8_t) ((i*2) & 0x00FF) );
         
-        // check status
-        if( Wire.endTransmission() ) 
+        // check status (0 is success)
+        if( Wire.endTransmission() == 0 ) 
         {
             //request reading from the address for the MSB
             Wire.requestFrom(EEPROM24_ADDR, 1);
@@ -95,8 +95,8 @@ void readDataFromEEPROM(uint16_t* buffer, uint16_t len)
         Wire.write( (uint8_t) (i*2 +1) >> 8 );
         Wire.write( (uint8_t) ((i*2 +1) & 0x00FF) );
         
-        // check status
-        if( Wire.endTransmission() ) 
+        // check status (0 is success)
+        if( Wire.endTransmission() == 0 ) 
         {  
             //request reading from the address for the LSB
             Wire.requestFrom(EEPROM24_ADDR, 1);
@@ -111,6 +111,8 @@ void readDataFromEEPROM(uint16_t* buffer, uint16_t len)
 
         //storing the upper and lower 8-bits into one 16-bit variable
         buffer[i] = (dataH << 8) | dataL;
+
+        delay(5);        
     }
 }
 
@@ -150,7 +152,7 @@ int main(void)
     adxl.powerOn();
 
     //array to store x/y/z readings
-    int xyz[3];
+    double xyz[3];
 
 
     /**
@@ -177,8 +179,8 @@ int main(void)
 
     //---------------------------------------------------------------
     // Begin main program Super Loop
-    while(1)
-    {
+    // while(1)
+    // {
         /**
          * Test #1: Try to read from the ADXL345 and
          * print out the results
@@ -186,7 +188,7 @@ int main(void)
         // readADXL(&currentReading);
 
         //polling the Accelerometer for the x/y/z data
-        adxl.readAccel(xyz);
+        adxl.get_Gxyz(xyz);
 
         Serial.print(xyz[0]);
         Serial.print("\t");
@@ -249,7 +251,7 @@ int main(void)
 
         delay(3000);
         
-    } //end while()
+    // } //end while()
 
     return 0;
 }
