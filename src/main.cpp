@@ -16,7 +16,6 @@
 //External libraries
 #include <SparkFun_ADXL345.h>
 #include <MCP7940.h>
-#include <EEPROM24.h>
 
 #include "StageManager/StageManager.hpp"
 
@@ -53,17 +52,11 @@ int main(void)
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
 
-    Serial.println("Hello Smitty!");
-
-
     //ADXL initialization
     ADXL345 adxl = ADXL345();
 
     //RTC class init
     MCP7940_Class MCP7940 = MCP7940_Class();
-
-    //EEPROM class init
-    EEPROM24 eeprom = EEPROM24();
 
 
     // Power on the ADXL345
@@ -71,9 +64,9 @@ int main(void)
 
     //ADXL testing code
 
-    int xyz[3];
+    double xyz[3];
 
-    adxl.readAccel(xyz);
+    adxl.get_Gxyz(xyz);
 
     Serial.print("x = ");
     Serial.println(xyz[0]);
@@ -86,42 +79,29 @@ int main(void)
 
 
     //RTC testing code
-
-    MCP7940.begin();         //start the RTC
+    //start the RTC
+    MCP7940.begin();
     Serial.println(F("MCP7940 initialized."));
-    while (!MCP7940.deviceStatus()) {                                           // Turn oscillator on if necessary  //
+
+    // Turn oscillator on if necessary
+    while (!MCP7940.deviceStatus())  //check if it's off
+    {
         Serial.println(F("Oscillator is off, turning it on."));
         MCP7940.deviceStart();
 
-    } // of while the oscillator is off
-    MCP7940.adjust();                                                           // Set to library compile Date/Time //
+    }
+
+    // Set to library compile Date/Time
+    MCP7940.adjust();
     
+    //display the time and date
     Serial.println(MCP7940.now().month());
     Serial.println(MCP7940.now().day());
     Serial.println(MCP7940.now().year());
 
 
-    //EEPROM testing
-
-    // example: bytes to be read with a single loop
-    #define READ_BYTES 32
-
-    unsigned int curr_addr = 0;
-
-    Serial.print("eeprom[");
-    Serial.print(curr_addr, HEX);
-    Serial.println("]:");
+    //TODO: EEPROM testing
     
-    // eeprom read loop
-    for(int i = 0; i < READ_BYTES; i++) {
-        byte re = (byte) eeprom.read(curr_addr);
-        
-        Serial.print(re, HEX);
-        Serial.print(' ');
-    
-        curr_addr += 1;
-    }
-  
 
     // power_all_disable();
 
