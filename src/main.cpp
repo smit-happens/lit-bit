@@ -13,10 +13,6 @@
 #include <avr/interrupt.h>
 #include <avr/power.h>
 
-//External libraries
-#include <SparkFun_ADXL345.h>
-#include <MCP7940.h>
-
 #include "StageManager/StageManager.hpp"
 
 
@@ -52,56 +48,21 @@ int main(void)
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
 
-    //ADXL initialization
-    ADXL345 adxl = ADXL345();
+    //start the I2C lines
+    I2cController* i2cC = I2cController::getInstance();
+    EepromController* eepromC = EepromController::getInstance();
+    RtcController* rtcC = RtcController::getInstance();
+    OledController* oledC = OledController::getInstance();
 
-    //RTC class init
-    MCP7940_Class MCP7940 = MCP7940_Class();
-
-
-    // Power on the ADXL345
-    adxl.powerOn();
-
-    //ADXL testing code
-
-    double xyz[3];
-
-    adxl.get_Gxyz(xyz);
-
-    Serial.print("x = ");
-    Serial.println(xyz[0]);
-    Serial.print("y = ");
-    Serial.println(xyz[1]);
-    Serial.print("z = ");
-    Serial.println(xyz[2]);
-    
-    // adxl.printAllRegister();
-
-
-    //RTC testing code
-    //start the RTC
-    MCP7940.begin();
-    Serial.println(F("MCP7940 initialized."));
-
-    // Turn oscillator on if necessary
-    while (!MCP7940.deviceStatus())  //check if it's off
-    {
-        Serial.println(F("Oscillator is off, turning it on."));
-        MCP7940.deviceStart();
-
-    }
-
-    // Set to library compile Date/Time
-    MCP7940.adjust();
-    
-    //display the time and date
-    Serial.println(MCP7940.now().month());
-    Serial.println(MCP7940.now().day());
-    Serial.println(MCP7940.now().year());
+    i2cC->init();
+    eepromC->init();
+    rtcC->init();
+    oledC->init();
 
 
     //TODO: EEPROM testing
     
+
 
     // power_all_disable();
 

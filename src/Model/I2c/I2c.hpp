@@ -1,4 +1,4 @@
-/**  Represents the Model of a CAN message
+/**  Represents the Model of an I2C message
  *
  * #include "I2c.hpp"
  * Created 05-24-18  By: Smitty
@@ -11,18 +11,12 @@
 
 #include "../BaseModel/BaseModel.hpp"
 #include "../Constants/Flags.hpp"
+#include <Wire.h>
 
 
 class I2c : public BaseModel
 {
 public:
-    //TODO: change these to the I2C IDs of the chips
-    const uint32_t UNITEKREADID = 0x181;
-    const uint32_t UNITEKSENDID = 0x201;
-
-    const uint32_t ORIONID1 = 0x420;
-    const uint32_t ORIONID2 = 0x421;
-
     I2c(void);
     ~I2c(void);
     

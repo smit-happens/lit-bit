@@ -7,7 +7,6 @@
  */
 
 #include "Eeprom.hpp"
-#include <Wire.h>
 
 /** 
  * @brief  Eeprom constructor

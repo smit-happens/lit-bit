@@ -11,12 +11,14 @@
 #define RTC_HPP
 
 #include "../BaseModel/BaseModel.hpp"
+#include <MCP7940.h>
 
 
 class Rtc : public BaseModel
 {
 public:
     Rtc(void);
+    ~Rtc(void);
 
     /** 
      * Drafting up possible functions
@@ -29,7 +31,8 @@ public:
     //TODO: make alarm handling functions for the RTC
 
 private:
-
+    MCP7940_Class* mcp7940Lib;
+    
 };
 
 

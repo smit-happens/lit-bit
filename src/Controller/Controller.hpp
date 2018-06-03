@@ -12,8 +12,10 @@
 #define CONTROLLER_HPP
 
 
-#include "RtcController/RtcController.hpp"
+#include "EepromController/EepromController.hpp"
+#include "I2cController/I2cController.hpp"
 #include "OledController/OledController.hpp"
+#include "RtcController/RtcController.hpp"
 
 
 #endif  //CONTROLLER_HPP

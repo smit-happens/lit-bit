@@ -13,7 +13,8 @@
  */
 I2c::I2c(void)
 {
-
+    Wire.begin();
+    Wire.setClock(400000L); //setting the data rate of I2C to 400kHz
 }
 
 
@@ -22,7 +23,7 @@ I2c::I2c(void)
  */
 I2c::~I2c(void)
 {
-
+    Wire.end();
 }
 
 

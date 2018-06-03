@@ -11,8 +11,11 @@
 
 #include "../BaseModel/BaseModel.hpp"
 #include "../Constants/Flags.hpp"
+#include <Wire.h>
 
-const uint8_t EEPROM24_ADDR = B10100000 >> 1;    // seven-bit address
+
+const uint8_t EEPROM24_ADDR = B10100000 >> 1;    // seven-bit address of the chip
+const uint8_t BYTES_PER_PAGE = 128;
 
 
 class Eeprom : public BaseModel
