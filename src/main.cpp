@@ -60,17 +60,11 @@ int main(void)
     oledC->init();
 
 
-    //TODO: EEPROM testing
-    
-
 
     // power_all_disable();
 
     //set the desired sleep mode
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-
-    //stop interrupts (execute atomically)
-    // cli();
 
     //enable sleep mode by setting the sleep bit
     // sleep_enable();

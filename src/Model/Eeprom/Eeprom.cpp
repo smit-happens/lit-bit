@@ -50,10 +50,10 @@ int Eeprom::readByte(uint16_t readAddress)
 {
     int readData;
     
-    //writing
+    //start comms with EEPROM
     Wire.beginTransmission(EEPROM24_ADDR);
 
-    //EEPROM address to write to
+    //EEPROM address to read from
     Wire.write( (uint8_t) readAddress >> 8 );
     Wire.write( (uint8_t) (readAddress & 0x00FF) );
     
@@ -72,4 +72,28 @@ int Eeprom::readByte(uint16_t readAddress)
     }
 
     return readData;
+}
+
+
+int Eeprom::readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* data)
+{
+    //0 is success
+    int result = 0;
+
+    if(endAddress - startAddress < 0)
+    {
+        //out of range error
+        result = -1;
+    }
+    else
+    {
+        //start comms with EEPROM
+        Wire.beginTransmission(EEPROM24_ADDR);
+
+        //EEPROM address to write to
+        Wire.write( (uint8_t) startAddress >> 8 );
+        Wire.write( (uint8_t) (startAddress & 0x00FF) );
+    }
+    
+    return result;
 }

@@ -33,7 +33,7 @@ public:
     int writePage();
 
     int readCurrent();
-    int readSequential();
+    int readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* data);
     int readRandom(uint16_t readAddress);    
 
 private:

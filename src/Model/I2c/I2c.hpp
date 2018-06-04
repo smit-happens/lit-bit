@@ -10,7 +10,6 @@
 #define I2C_HPP
 
 #include "../BaseModel/BaseModel.hpp"
-#include "../Constants/Flags.hpp"
 #include <Wire.h>
 
 

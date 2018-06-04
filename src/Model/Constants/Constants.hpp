@@ -8,16 +8,16 @@
 #define CONSTANTS_HPP
 
 //Max analog read value
-const int MAX_ANALOGREAD = 8195;    //(2^13)-1
-const int MAX_BACKLIGHT_BR = 65535;
+// const int MAX_ANALOGREAD = 8195;    //(2^13)-1
+// const int MAX_BACKLIGHT_BR = 65535;
 
 
 //types of log statements we can use
-enum msg_type{
-    MSG_LOG,
-    MSG_DEBUG,
-    MSG_WARN,
-    MSG_ERR
+enum I2cDevices{
+    DEVICE_ADXL,
+    DEVICE_RTC,
+    DEVICE_EEPROM,
+    DEVICE_OLED
 };
 
 
@@ -25,9 +25,6 @@ enum Stage
 {
     STAGE_BOOTTEST,
     STAGE_STANDBY,
-    STAGE_PRECHARGE,
-    STAGE_ENERGIZED,
-    STAGE_DRIVING,
     STAGE_SHUTDOWN
 };
 

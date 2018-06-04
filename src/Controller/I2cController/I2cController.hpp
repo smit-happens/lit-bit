@@ -22,6 +22,9 @@ public:
 
     void init(void);
 
+    //flesh this out
+    int startBus();
+
 
 private:
     //Private contstructor so that it can't be called

@@ -16,9 +16,11 @@
 class EepromController : public BaseController
 {
 public:
-    ~EepromController(void);
+    ~EepromController();
     static EepromController*   getInstance();
-    void init(void);
+    void init();
+
+    void test();
 
     void read();
     void write();

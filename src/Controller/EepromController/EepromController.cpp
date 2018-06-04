@@ -48,3 +48,33 @@ void EepromController::init(void)
     eepromModel = new Eeprom();
 }
 
+
+void EepromController::test(void)
+{
+    uint8_t array[5], buffer[5];
+    for(int i = 0; i < 5; i++)
+    {
+        array[i] = random();
+        eepromModel->writeByte(array[i], 5);
+    }
+
+    eepromModel->readSequential(0, 4, buffer);
+
+    bool testPass = true;
+    for(int i = 0; i < 5; i++)
+    {
+        if(buffer[i]!=array[i])
+        {
+            testPass=false;
+        }
+    }
+    
+    if(testPass)
+    {
+        Serial.println("EEPROM Test Passed.");
+    }
+    else
+    {
+        Serial.println("EEPROM Test Failed.");
+    }
+}
