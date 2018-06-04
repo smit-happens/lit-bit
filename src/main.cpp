@@ -25,6 +25,7 @@ const uint8_t EEPROM24_ADDR = B10100000 >> 1;    // seven-bit address
  */
 void writeDataToEEPROM(uint16_t* data, uint16_t len)
 {
+    //iterate through the length of the array
     for(int i = 0; i < len; i++)
     {
         //splitting the data into upper and lower 8-bit numbers
@@ -68,6 +69,7 @@ void readDataFromEEPROM(uint16_t* buffer, uint16_t len)
 {
     int dataH = 0, dataL = 0;
 
+    //iterate through the length of the array
     for(int i = 0; i < len; i++)
     {
         //setup communication with EEPROM        
@@ -167,9 +169,11 @@ int main(void)
     MCP7940.begin();
     Serial.println(F("MCP7940 initialized."));
 
-    // Turn oscillator on if necessary
-    while (!MCP7940.deviceStatus()) {
+    // check the oscillator status
+    while (!MCP7940.deviceStatus()) 
+    {
         Serial.println(F("Oscillator is off, turning it on."));
+        // Turn oscillator on if necessary
         MCP7940.deviceStart();
     }
 
@@ -179,14 +183,12 @@ int main(void)
 
     //---------------------------------------------------------------
     // Begin main program Super Loop
-    // while(1)
-    // {
+    while(1)
+    {
         /**
          * Test #1: Try to read from the ADXL345 and
          * print out the results
          */
-        // readADXL(&currentReading);
-
         //polling the Accelerometer for the x/y/z data
         adxl.get_Gxyz(xyz);
 
@@ -201,7 +203,6 @@ int main(void)
          * Test #2: Try to read out the time of day and
          * print out the results
          */
-        // readRTC(&currentDateTime);
         DateTime rightNow = MCP7940.now();      //reading the current time from the RTC
         Serial.print(rightNow.month());
         Serial.print("/");
@@ -251,7 +252,7 @@ int main(void)
 
         delay(3000);
         
-    // } //end while()
+    } //end while()
 
     return 0;
 }
