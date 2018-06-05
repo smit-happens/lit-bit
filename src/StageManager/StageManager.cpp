@@ -112,45 +112,45 @@ void StageManager::configureStage(void)
         break;
 
         
-        // Entry condition: Driver requests Precharging
-        // Exit condition:  Precharge done signal recieved from Unitek
-        case STAGE_PRECHARGE:
-        {
-            //check to make sure this hasn't been ran before for this stage
-            if(isPrechargeConfigured == false)
-            {
+        // // Entry condition: Driver requests Precharging
+        // // Exit condition:  Precharge done signal recieved from Unitek
+        // case STAGE_PRECHARGE:
+        // {
+        //     //check to make sure this hasn't been ran before for this stage
+        //     if(isPrechargeConfigured == false)
+        //     {
              
 
-            }   
-        }   
-        break;
+        //     }   
+        // }   
+        // break;
 
 
-        // Entry condition: Precharge done signal recieved from Unitek
-        // Exit condition:  Driver requests ready to drive
-        case STAGE_ENERGIZED:
-        {
-            //check to make sure this hasn't been ran before for this stage
-            if(isEnergizedConfigured == false)
-            {
+        // // Entry condition: Precharge done signal recieved from Unitek
+        // // Exit condition:  Driver requests ready to drive
+        // case STAGE_ENERGIZED:
+        // {
+        //     //check to make sure this hasn't been ran before for this stage
+        //     if(isEnergizedConfigured == false)
+        //     {
 
-            }
-        }
-        break;
-
-
-        // Entry condition: Driver requests ready to drive
-        // Exit condition:  Driver requests standby
-        case STAGE_DRIVING:
-        {
-            //check to make sure this hasn't been ran before for this stage
-            if(isDrivingConfigured == false)
-            {
+        //     }
+        // }
+        // break;
 
 
-            }
-        }
-        break;
+        // // Entry condition: Driver requests ready to drive
+        // // Exit condition:  Driver requests standby
+        // case STAGE_DRIVING:
+        // {
+        //     //check to make sure this hasn't been ran before for this stage
+        //     if(isDrivingConfigured == false)
+        //     {
+
+
+        //     }
+        // }
+        // break;
 
 
         default:
@@ -258,31 +258,31 @@ void StageManager::resetAllStagesExcept(Stage nonResetStage)
         break;
 
         
-        //Precharge stage is configured
-        case Stage::STAGE_PRECHARGE:
-        {
-            // logger->log("STAGE_MGR", "Started configuring STAGE_PRECHARGE", MSG_LOG);
-            isPrechargeConfigured = true;
-        }
-        break;
+        // //Precharge stage is configured
+        // case Stage::STAGE_PRECHARGE:
+        // {
+        //     // logger->log("STAGE_MGR", "Started configuring STAGE_PRECHARGE", MSG_LOG);
+        //     isPrechargeConfigured = true;
+        // }
+        // break;
 
 
-        //Energized stage is configured
-        case Stage::STAGE_ENERGIZED:
-        {
-            // logger->log("STAGE_MGR", "Started configuring STAGE_ENERGIZED", MSG_LOG);    
-            isEnergizedConfigured = true;
-        }
-        break;
+        // //Energized stage is configured
+        // case Stage::STAGE_ENERGIZED:
+        // {
+        //     // logger->log("STAGE_MGR", "Started configuring STAGE_ENERGIZED", MSG_LOG);    
+        //     isEnergizedConfigured = true;
+        // }
+        // break;
 
 
-        //Driving stage is configured
-        case Stage::STAGE_DRIVING:
-        {
-            // logger->log("STAGE_MGR", "Started configuring STAGE_DRIVING", MSG_LOG);            
-            isDrivingConfigured = true;
-        }
-        break;
+        // //Driving stage is configured
+        // case Stage::STAGE_DRIVING:
+        // {
+        //     // logger->log("STAGE_MGR", "Started configuring STAGE_DRIVING", MSG_LOG);            
+        //     isDrivingConfigured = true;
+        // }
+        // break;
 
 
         default:
