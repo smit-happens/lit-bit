@@ -32,8 +32,8 @@ ADXL345::ADXL345() {
 	status = ADXL345_OK;
 	error_code = ADXL345_NO_ERROR;
 	
-	gains[0] = 0.00376390;		// Original gain 0.00376390 
-	gains[1] = 0.00376009;		// Original gain 0.00376009
+	gains[0] = 0.00326390;		// Original gain 0.00376390 
+	gains[1] = 0.00326009;		// Original gain 0.00376009
 	gains[2] = 0.00349265;		// Original gain 0.00349265
 	I2C = true;
 }

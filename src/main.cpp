@@ -10,8 +10,8 @@
 #include <Wire.h>
 
 //External libraries
-#include <SparkFun_ADXL345.h>
-#include <MCP7940.h>
+#include <SparkFun_ADXL345.h>   //https://github.com/shirish47/SparkFun_ADXL345_Arduino_Library
+#include <MCP7940.h>            //https://github.com/SV-Zanshin/MCP7940
 
 const uint8_t EEPROM24_ADDR = B10100000 >> 1;    // seven-bit address
 
@@ -250,7 +250,7 @@ int main(void)
             Serial.println("EEPROM Test Failed.");
         }
 
-        delay(3000);
+        delay(1000);
         
     } //end while()
 
