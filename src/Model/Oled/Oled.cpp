@@ -15,7 +15,7 @@
 Oled::Oled(void)
 {
 
-    // display = new U8G2_ST7565_LM6059_F_4W_SW_SPI(U8G2_R0, MB_SCLK, MB_SID, MB_CS, MB_A0, MB_RST);
+    // display = new U8G2_SSD1306_64X48_ER_F_HW_I2C(U8G2_R0, );
 
     // initialize the glcd and set the contrast to 0x18
     // display->begin();

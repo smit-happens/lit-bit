@@ -10,6 +10,7 @@
 #define OLED_HPP
 
 // #include <U8g2lib.h>
+#include <SFE_MicroOLED.h>
 #include "../BaseModel/BaseModel.hpp"
 #include "../Constants/Port.hpp"
 #include "../Constants/Constants.hpp"
@@ -29,7 +30,8 @@ private:
     bool dirtyBit = false; //if buffer has been modified
 
     //private instance of the ST7565 object for our GLCD
-    //  U8G2_ST7565_LM6059_F_4W_SW_SPI* display;
+    //  U8G2_SSD1306_64X48_ER_F_HW_I2C* display;
+
 
 };
 
