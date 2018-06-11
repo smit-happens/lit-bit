@@ -54,11 +54,10 @@ int main(void)
     RtcController* rtcC = RtcController::getInstance();
     OledController* oledC = OledController::getInstance();
 
-    i2cC->init();
+    i2cC->init();       //initialize I2C first
     eepromC->init();
     rtcC->init();
     oledC->init();
-
 
 
     // power_all_disable();
@@ -87,7 +86,7 @@ int main(void)
 
     //---------------------------------------------------------------
     // Begin main program Super Loop
-    while(1)
+    while(true)
     {
         noInterrupts();
         

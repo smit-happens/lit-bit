@@ -214,11 +214,7 @@ private:
 	static const unsigned char *fontsPointer[];
 	
 	// Communication
-	void spiTransfer(byte data);
-	void spiSetup();
 	void i2cSetup();
 	void i2cWrite(byte address, byte control, byte data);
-	void parallelSetup();
-	void parallelWrite(byte data, byte dc);
 };
 #endif
