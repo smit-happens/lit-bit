@@ -9,7 +9,6 @@
 #ifndef OLED_HPP
 #define OLED_HPP
 
-// #include <U8g2lib.h>
 #include <SFE_MicroOLED.h>
 #include "../BaseModel/BaseModel.hpp"
 #include "../Constants/Port.hpp"
