@@ -57,27 +57,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 // Add header of the fonts here.  Remove as many as possible to conserve FLASH memory.
 #include "util/font5x7.h"
-#include "util/font8x16.h"
-#include "util/fontlargenumber.h"
-#include "util/7segment.h"
-#include "util/fontlargeletter31x48.h"
+// #include "util/font8x16.h"
+// #include "util/fontlargenumber.h"
+// #include "util/7segment.h"
 
-// Change the total fonts included
-#ifdef INCLUDE_LARGE_LETTER_FONT
-#define TOTALFONTS		5
-#else
 #define TOTALFONTS		4
-#endif
 
 // Add the font name as declared in the header file.  Remove as many as possible to conserve FLASH memory.
 const unsigned char *MicroOLED::fontsPointer[]={
 	font5x7
-	,font8x16
-	,sevensegment
-	,fontlargenumber
-#ifdef INCLUDE_LARGE_LETTER_FONT
-	,fontlargeletter31x48
-#endif
+	// ,font8x16
+	// ,sevensegment
+	// ,fontlargenumber
 };
 
 /** \brief MicroOLED screen buffer.
@@ -150,7 +141,6 @@ static uint8_t screenmemory [] = {
 MicroOLED::MicroOLED(uint8_t rst, uint8_t dc)
 {
 	rstPin = rst;	// Assign reset pin to private class variable
-	interface = MODE_I2C;	// Set interface to I2C
 	// Set the I2C Address based on whether DC is high (1) or low (0).
 	// The pin is pulled low by default, so if it's not explicitly set to
 	// 1, just default to 0.
@@ -248,6 +238,20 @@ void MicroOLED::data(uint8_t c) {
 	// Write to our address, make sure it knows we're sending a
 	// data byte:
 	i2cWrite(i2c_address, I2C_DATA, c);
+}
+
+/** \brief  Write a byte over I2C
+
+Write a byte to I2C device _address_. The DC byte determines whether
+the data being sent is a command or display data. Use either I2C_COMMAND
+or I2C_DATA in that parameter. The data byte can be any 8-bit value.
+**/
+void MicroOLED::i2cWrite(byte address, byte dc, byte data)
+{
+	Wire.beginTransmission(address);
+	Wire.write(dc); // If data dc = 0, if command dc = 0x40
+	Wire.write(data);
+	Wire.endTransmission();
 }
 
 /** \brief Set SSD1306 page address.

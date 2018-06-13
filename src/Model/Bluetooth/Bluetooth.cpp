@@ -9,10 +9,6 @@
 #include "Bluetooth.hpp"
 
 
-// create ble serial instance, see pinouts above
-// BLESerial BLESerial(LB_BLE_REQ, LB_BLE_RDY, LB_BLE_RST);
-
-
 /** 
  * @brief  Bluetooth constructor
  */

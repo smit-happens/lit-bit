@@ -40,6 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdio.h>
 #include <Arduino.h>
+#include <Wire.h>
 
 #if defined(__AVR__) || defined(__arm__)
 	#include <avr/pgmspace.h>
@@ -126,11 +127,6 @@ typedef enum CMD {
 	CMD_SETDRAWMODE		//18
 } commCommand_t;
 
-typedef enum COMM_MODE{
-	MODE_SPI,
-	MODE_I2C,
-	MODE_PARALLEL
-} micro_oled_mode;
 
 class MicroOLED : public Print{
 public:
@@ -205,7 +201,6 @@ private:
 	uint8_t wrPin, rdPin, dPins[8];
 	volatile uint8_t *wrport, *wrreg, *rdport, *rdreg;
 	uint8_t wrpinmask, rdpinmask;
-	micro_oled_mode interface;
 	byte i2c_address;
 	volatile uint8_t *ssport, *dcport, *ssreg, *dcreg;	// use volatile because these are fixed location port address
 	uint8_t mosipinmask, sckpinmask, sspinmask, dcpinmask;
