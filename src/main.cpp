@@ -37,7 +37,7 @@ int main(void)
         USBDevice.attach();
     #endif
 
-    Serial.begin(9600);
+    Serial.begin(115200);
     while (!Serial) {
         ; // wait for serial port to connect
     }
@@ -58,7 +58,6 @@ int main(void)
     eepromC->init();
     rtcC->init();
     oledC->init();
-
 
     // power_all_disable();
 

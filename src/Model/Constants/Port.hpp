@@ -75,6 +75,7 @@ const uint8_t LB_RTC_MFP          = 0;
 
 */
 const uint8_t LB_BLE_RDY          = 7;
+const uint8_t LB_BLE_REQ          = 9;
 const uint8_t LB_BLE_ACT          = 11;
 const uint8_t LB_BLE_RST          = 12;
 

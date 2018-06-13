@@ -23,12 +23,6 @@ Oled::Oled(void)
     display->display();  // Display what's in the buffer (splashscreen)
     delay(1000);     // Delay 1000 ms
     display->clear(PAGE); // Clear the buffer.
-
-    while(1){
-        lineExample();   // Then the line example function
-        shapeExample();  // Then the shape example
-        textExamples();  // Finally the text example
-    }
 }
 
 
@@ -37,7 +31,7 @@ Oled::Oled(void)
  */
 Oled::~Oled(void)
 {
-    delete display;
+    // delete display;      //deleting object of polymorphic class type warning
 }
 
 
@@ -218,32 +212,6 @@ void Oled::textExamples()
     display->print("tuvwxyz{|}~");
     display->display();
     delay(1000);
-    
-    // Demonstrate font 2. 10x16. Only numbers and '.' are defined. 
-    // This font looks like 7-segment displays.
-    // Lets use this big-ish font to display readings from the
-    // analog pins.
-    for (int i=0; i<25; i++)
-    {
-        display->clear(PAGE);            // Clear the display
-        display->setCursor(0, 0);        // Set cursor to top-left
-        display->setFontType(0);         // Smallest font
-        display->print("A0: ");          // Print "A0"
-        display->setFontType(2);         // 7-segment font
-        display->print(analogRead(A0));  // Print a0 reading
-        display->setCursor(0, 16);       // Set cursor to top-middle-left
-        display->setFontType(0);         // Repeat
-        display->print("A1: ");
-        display->setFontType(2);
-        display->print(analogRead(A1));
-        display->setCursor(0, 32);
-        display->setFontType(0);
-        display->print("A2: ");
-        display->setFontType(2);
-        display->print(analogRead(A2));
-        display->display();
-        delay(100);
-    }
     
     // Demonstrate font 3. 12x48. Stopwatch demo.
     display->setFontType(3);  // Use the biggest font
