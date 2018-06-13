@@ -16,6 +16,7 @@
 #include "I2cController/I2cController.hpp"
 #include "OledController/OledController.hpp"
 #include "RtcController/RtcController.hpp"
+#include "BleController/BleController.hpp"
 
 
 #endif  //CONTROLLER_HPP

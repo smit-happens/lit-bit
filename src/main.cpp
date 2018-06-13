@@ -53,11 +53,13 @@ int main(void)
     EepromController* eepromC = EepromController::getInstance();
     RtcController* rtcC = RtcController::getInstance();
     OledController* oledC = OledController::getInstance();
+    BleController* bleC = BleController::getInstance();
 
     i2cC->init();       //initialize I2C first
     eepromC->init();
     rtcC->init();
     oledC->init();
+    bleC->init();
 
     // power_all_disable();
 

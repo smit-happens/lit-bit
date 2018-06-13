@@ -24,7 +24,6 @@ BLESerial::BLESerial(unsigned char req, unsigned char rdy, unsigned char rst) :
 
 void BLESerial::begin(...) {
   BLEPeripheral::begin();
-  BLEPeripheral::setDeviceName("Smit");
   #ifdef BLE_SERIAL_DEBUG
     Serial.println(F("BLESerial::begin()"));
   #endif
@@ -58,7 +57,7 @@ int BLESerial::available(void) {
 int BLESerial::peek(void) {
   BLEPeripheral::poll();
   if (this->_rxTail == this->_rxHead) return -1;
-  uint8_t byte = this->_rxBuffer[this->_rxTail];
+  uint8_t byte = this->_rxBuffer[ (this->_rxTail + 1) % sizeof(this->_rxBuffer)];
   #ifdef BLE_SERIAL_DEBUG
     Serial.print(F("BLESerial::peek() = "));
     Serial.print((char) byte);
@@ -118,7 +117,7 @@ BLESerial::operator bool() {
 }
 
 void BLESerial::_received(const uint8_t* data, size_t size) {
-  for (int i = 0; i < size; i++) {
+  for (size_t i = 0; i < size; i++) {
     this->_rxHead = (this->_rxHead + 1) % sizeof(this->_rxBuffer);
     this->_rxBuffer[this->_rxHead] = data[i];
   }
