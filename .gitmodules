@@ -4,3 +4,6 @@
 [submodule "lib/arduino-BLEPeripheral"]
 	path = lib/arduino-BLEPeripheral
 	url = https://github.com/PatHock/arduino-BLEPeripheral.git
+[submodule "lib/Adafruit_nRF8001"]
+	path = lib/Adafruit_nRF8001
+	url = https://github.com/smit-happens/Adafruit_nRF8001.git
