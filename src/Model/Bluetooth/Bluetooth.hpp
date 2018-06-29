@@ -10,8 +10,9 @@
 #define BLUETOOTH_HPP
 
 #include <SPI.h>
-#include <BLEPeripheral.h>              //library from: https://github.com/sandeepmistry/arduino-BLEPeripheral
-#include "BLESerial.h"
+// #include <BLEPeripheral.h>              //library from: https://github.com/sandeepmistry/arduino-BLEPeripheral
+// #include "BLESerial.h"
+#include <Adafruit_BLE_UART.h>
 #include "../BaseModel/BaseModel.hpp"
 #include "../Constants/Port.hpp"
 #include "../Constants/Constants.hpp"
@@ -28,8 +29,8 @@ public:
 
 private:
     //private instance of the bluetooth object
-    BLESerial *bluetooth;
-
+    // BLESerial *bluetooth;
+    Adafruit_BLE_UART *bluetooth;
 
 };
 

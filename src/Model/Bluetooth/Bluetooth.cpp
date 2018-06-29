@@ -14,20 +14,22 @@
  */
 Bluetooth::Bluetooth(void)
 {
-    //initialize the oled library
-    bluetooth = new BLESerial(LB_BLE_REQ, LB_BLE_RDY, LB_BLE_RST);
+    // //initialize the oled library
+    // bluetooth = new BLESerial(LB_BLE_REQ, LB_BLE_RDY, LB_BLE_RST);
 
-    // custom services and characteristics can be added as well
-    bluetooth->setLocalName("UART");
+    // // custom services and characteristics can be added as well
+    // bluetooth->setLocalName("UART");
 
-    bluetooth->begin();
+    // bluetooth->begin();
 
 
-    while(1) {
-        bluetooth->poll();
+    // while(1) {
+    //     bluetooth->poll();
 
-        forward();
-    }
+    //     forward();
+    // }
+
+    bluetooth = new Adafruit_BLE_UART(LB_BLE_REQ, LB_BLE_RDY, LB_BLE_RST);
 
 
 }
@@ -42,11 +44,11 @@ Bluetooth::~Bluetooth(void)
 }
 
 
-// forward received from Serial to BLESerial and vice versa
-void Bluetooth::forward() {
-  if (bluetooth && Serial) {
-    int byte;
-    while ((byte = bluetooth->read()) > 0) Serial.write((char)byte);
-    while ((byte = Serial.read()) > 0) bluetooth->write((char)byte);
-  }
-}
+// // forward received from Serial to BLESerial and vice versa
+// void Bluetooth::forward() {
+//   if (bluetooth && Serial) {
+//     int byte;
+//     while ((byte = bluetooth->read()) > 0) Serial.write((char)byte);
+//     while ((byte = Serial.read()) > 0) bluetooth->write((char)byte);
+//   }
+// }
