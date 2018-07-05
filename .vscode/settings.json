@@ -4,7 +4,7 @@
         "PLATFORMIO_CALLER": "vscode"
     },
     "terminal.integrated.env.linux": {
-        "PATH": "/home/smitty/.platformio/penv/bin:/home/smitty/.platformio/penv:/home/smitty/anaconda3/bin:/home/smitty/Documents/Dev/flutter/bin:/home/smitty/bin:/home/smitty/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/smitty/.antigen/bundles/robbyrussell/oh-my-zsh/lib",
+        "PATH": "/home/smitty/.platformio/penv/bin:/home/smitty/.platformio/penv:/home/smitty/anaconda3/bin:/home/smitty/Documents/Dev/flutter/bin:/home/smitty/bin:/home/smitty/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/smitty/.platformio/penv/bin:/home/smitty/.antigen/bundles/robbyrussell/oh-my-zsh/lib",
         "PLATFORMIO_CALLER": "vscode"
     }
 }

@@ -102,7 +102,7 @@ int main(void)
         localEventFlags |= timerEventFlags << 8;
 
 
-
+        //processing stage returns the next stage
         localStage.currentStage = localStage.processStage(&localEventFlags, localTaskFlags);
 
         //checking if we need to update the timers
