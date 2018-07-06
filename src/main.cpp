@@ -48,16 +48,18 @@ int main(void)
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
 
-    //start the I2C lines
-    I2cController* i2cC = I2cController::getInstance();
-    EepromController* eepromC = EepromController::getInstance();
-    RtcController* rtcC = RtcController::getInstance();
-    OledController* oledC = OledController::getInstance();
-    BleController* bleC = BleController::getInstance();
+    //controller initialization
+    I2cController* i2cC          = I2cController::getInstance();             //start the I2C first
+    EepromController* eepromC    = EepromController::getInstance();
+    RtcController* rtcC          = RtcController::getInstance();
+    AdxlController* adxlC        = AdxlController::getInstance();
+    OledController* oledC        = OledController::getInstance();
+    BleController* bleC          = BleController::getInstance();
 
     i2cC->init();       //initialize I2C first
     eepromC->init();
     rtcC->init();
+    adxlC->init();
     oledC->init();
     bleC->init();
 

@@ -115,7 +115,6 @@ public:
 	double gains[3];				// Counts to Gs
 	
 	ADXL345();
-	ADXL345(int CS);
 	void powerOn();
 	void readAccel(int* xyx);
 	void readAccel(int* x, int* y, int* z);
@@ -208,8 +207,6 @@ public:
 	void setRangeSetting(int val);
 	bool getSelfTestBit();
 	void setSelfTestBit(bool selfTestBit);
-	bool getSpiBit();
-	void setSpiBit(bool spiBit);
 	bool getInterruptLevelBit();
 	void setInterruptLevelBit(bool interruptLevelBit);
 	bool getFullResBit();
@@ -230,16 +227,12 @@ public:
 private:
 	void writeTo(byte address, byte val);
 	void writeToI2C(byte address, byte val);
-	void writeToSPI(byte address, byte val);
 	void readFrom(byte address, int num, byte buff[]);
 	void readFromI2C(byte address, int num, byte buff[]);
-	void readFromSPI(byte address, int num, byte buff[]);
 	void setRegisterBit(byte regAdress, int bitPos, bool state);
 	bool getRegisterBit(byte regAdress, int bitPos);  
 	byte _buff[6] ;		//	6 Bytes Buffer
-	int _CS = 10;
 	bool I2C = true;
-	unsigned long SPIfreq = 5000000;
 };
 void print_byte(byte val);
 #endif

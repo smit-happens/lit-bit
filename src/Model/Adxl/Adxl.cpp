@@ -18,9 +18,10 @@ Adxl::Adxl(void)
     // Power on the ADXL345
     adxlLib->powerOn();
 
-    double xyz[3];
+    int xyz[3];
 
-    adxlLib->get_Gxyz(xyz);
+    // adxlLib->get_Gxyz(xyz);
+    adxlLib->readAccel(xyz);
 
     Serial.print("x = ");
     Serial.println(xyz[0]);

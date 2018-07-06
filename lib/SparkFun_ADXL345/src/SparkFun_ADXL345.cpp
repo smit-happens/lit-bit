@@ -23,7 +23,6 @@ Arduino Uno
 #include "Arduino.h"
 #include "SparkFun_ADXL345.h"
 #include <Wire.h>
-#include <SPI.h>
 
 #define ADXL345_DEVICE (0x53)    // Device Address for ADXL345
 #define ADXL345_TO_READ (6)      // Number of Bytes Read - Two Bytes Per Axis
@@ -38,25 +37,7 @@ ADXL345::ADXL345() {
 	I2C = true;
 }
 
-ADXL345::ADXL345(int CS) {
-	status = ADXL345_OK;
-	error_code = ADXL345_NO_ERROR;
-	
-	gains[0] = 0.00376390;
-	gains[1] = 0.00376009;
-	gains[2] = 0.00349265;
-	_CS = CS;
-	I2C = false;
-	SPI.begin();
-	SPI.setDataMode(SPI_MODE3);
-	pinMode(_CS, OUTPUT);
-	digitalWrite(_CS, HIGH);
-}
-
 void ADXL345::powerOn() {
-	if(I2C) {
-		Wire.begin();				// If in I2C Mode Only
-	}
 	//ADXL345 TURN ON
 	writeTo(ADXL345_POWER_CTL, 0);	// Wakeup     
 	writeTo(ADXL345_POWER_CTL, 16);	// Auto_Sleep
@@ -91,23 +72,13 @@ void ADXL345::get_Gxyz(double *xyz){
 
 /***************** WRITES VALUE TO ADDRESS REGISTER *****************/
 void ADXL345::writeTo(byte address, byte val) {
-	if(I2C) {
-		writeToI2C(address, val);
-	}
-	else {
-		writeToSPI(address, val);
-	}
+	writeToI2C(address, val);
 }
 
 /************************ READING NUM BYTES *************************/
 /*    Reads Num Bytes. Starts from Address Reg to _buff Array        */
 void ADXL345::readFrom(byte address, int num, byte _buff[]) {
-	if(I2C) {
-		readFromI2C(address, num, _buff);	// If I2C Communication
-	}
-	else {
-		readFromSPI(address, num, _buff);	// If SPI Communication 
-	}
+	readFromI2C(address, num, _buff);	// I2C Communication
 }
 
 /*************************** WRITE TO I2C ***************************/
@@ -140,33 +111,6 @@ void ADXL345::readFromI2C(byte address, int num, byte _buff[]) {
 		error_code = ADXL345_READ_ERROR;
 	}
 	Wire.endTransmission();         	
-}
-
-/************************** WRITE FROM SPI **************************/
-/*         Point to Destination; Write Value; Turn Off              */
-void ADXL345::writeToSPI(byte __reg_address, byte __val) {
-  digitalWrite(_CS, LOW);
-  SPI.transfer(__reg_address); 
-  SPI.transfer(__val); 
-  digitalWrite(_CS, HIGH); 
-}
-
-/*************************** READ FROM SPI **************************/
-/*                                                                  */
-void ADXL345::readFromSPI(byte __reg_address, int num, byte _buff[]) {
-  // Read: Most Sig Bit of Reg Address Set
-  char _address = 0x80 | __reg_address;
-  // If Multi-Byte Read: Bit 6 Set 
-  if(num > 1) {
-  	_address = _address | 0x40;
-  }
-
-  digitalWrite(_CS, LOW);
-  SPI.transfer(_address);		// Transfer Starting Reg Address To Be Read  
-  for(int i=0; i<num; i++){
-    _buff[i] = SPI.transfer(0x00);
-  }
-  digitalWrite(_CS, HIGH);
 }
 
 /*************************** RANGE SETTING **************************/
@@ -213,18 +157,6 @@ bool ADXL345::getSelfTestBit() {
 // If Set (0) Self-Test Disabled.
 void ADXL345::setSelfTestBit(bool selfTestBit) {
 	setRegisterBit(ADXL345_DATA_FORMAT, 7, selfTestBit);
-}
-
-/*************************** SPI BIT STATE **************************/
-/*                           ~ GET & SET                            */
-bool ADXL345::getSpiBit() {
-	return getRegisterBit(ADXL345_DATA_FORMAT, 6);
-}
-
-// If Set (1) Puts Device in 3-wire Mode
-// If Set (0) Puts Device in 4-wire SPI Mode
-void ADXL345::setSpiBit(bool spiBit) {
-	setRegisterBit(ADXL345_DATA_FORMAT, 6, spiBit);
 }
 
 /*********************** INT_INVERT BIT STATE ***********************/

@@ -119,7 +119,6 @@ void StageManager::configureStage(void)
         //     //check to make sure this hasn't been ran before for this stage
         //     if(isPrechargeConfigured == false)
         //     {
-             
 
         //     }   
         // }   
