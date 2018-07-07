@@ -10,8 +10,7 @@
 
 //AVR library imports
 #include <avr/sleep.h>
-#include <avr/interrupt.h>
-#include <avr/power.h>
+#include <avr/power.h>      //reference: https://www.nongnu.org/avr-libc/user-manual/group__avr__power.html
 
 #include "StageManager/StageManager.hpp"
 
@@ -48,6 +47,14 @@ int main(void)
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
 
+    power_all_disable();
+    power_spi_enable();
+    power_twi_enable();
+    power_timer0_enable();
+    #ifdef DEBUG
+        power_usb_enable();
+    #endif
+
     //controller initialization
     I2cController* i2cC          = I2cController::getInstance();             //start the I2C first
     EepromController* eepromC    = EepromController::getInstance();
@@ -63,7 +70,6 @@ int main(void)
     oledC->init();
     bleC->init();
 
-    // power_all_disable();
 
     //set the desired sleep mode
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);

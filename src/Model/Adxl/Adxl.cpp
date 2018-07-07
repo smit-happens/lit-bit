@@ -18,17 +18,8 @@ Adxl::Adxl(void)
     // Power on the ADXL345
     adxlLib->powerOn();
 
-    int xyz[3];
-
-    // adxlLib->get_Gxyz(xyz);
-    adxlLib->readAccel(xyz);
-
-    Serial.print("x = ");
-    Serial.println(xyz[0]);
-    Serial.print("y = ");
-    Serial.println(xyz[1]);
-    Serial.print("z = ");
-    Serial.println(xyz[2]);
+    //initialize the accel to 0 since no readings have been done
+    xyz = { 0 };
 }
 
 
@@ -40,4 +31,34 @@ Adxl::~Adxl(void)
 
 }
 
+void Adxl::storeAccelXYZ(void)
+{
+    // adxlLib->get_Gxyz(xyz);
+    adxlLib->readAccel(xyz);
+
+    // Serial.print("x = ");
+    // Serial.println(xyz[0]);
+    // Serial.print("y = ");
+    // Serial.println(xyz[1]);
+    // Serial.print("z = ");
+    // Serial.println(xyz[2]);
+}
+
+
+int Adxl::getX()
+{
+    return xyz[0];
+}
+
+
+int Adxl::getY()
+{
+    return xyz[1];
+}
+
+
+int Adxl::getZ()
+{
+    return xyz[2];
+}
 
