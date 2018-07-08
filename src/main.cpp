@@ -25,9 +25,10 @@ void timerISR() {
     globalEventFlags        |= EF_TIMER;
 }
 
-
+//All the adxl interrupts go here
+//NOTE: might need logic to grab what interrupt was triggered
 void adxlISR() {
-    
+    globalEventFlags        |= EF_ADXL;
 }
 
 
