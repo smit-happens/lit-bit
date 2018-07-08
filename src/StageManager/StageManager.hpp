@@ -60,10 +60,12 @@ private:
 
 
     //Processing functions for the various devices
-    void processCan(uint8_t* taskFlags);
-    void processDash(uint8_t* taskFlags);
+    void processAdxl(uint8_t* taskFlags);
+    void processRtc(uint8_t* taskFlags);
+    void processBle(uint8_t* taskFlags);
+    void processEeprom(uint8_t* taskFlags);
     void processOled(uint8_t* taskFlags);
-    void processPedal(uint8_t* eventFlags, uint8_t* taskFlags);
+    // void processPedal(uint8_t* eventFlags, uint8_t* taskFlags);
 
 
     //for making sure that all the stages except the currently executing one needs to be reconfigured

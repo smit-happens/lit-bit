@@ -21,6 +21,8 @@ public:
     Adxl(void);
     ~Adxl(void);
 
+    void setupTap(void);
+
     void storeAccelXYZ(void);
     int getX(void);
     int getY(void);

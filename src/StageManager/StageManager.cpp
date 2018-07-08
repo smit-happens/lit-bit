@@ -69,7 +69,8 @@ uint8_t StageManager::processTimers(void)
  */
 void StageManager::bootTest(uint16_t* eventFlags)
 {
-
+    //TODO: figure out if this is even needed
+    //could be used to grab time from RTC on boot
     currentStage = STAGE_STANDBY;
 
 }
@@ -82,7 +83,6 @@ void StageManager::bootTest(uint16_t* eventFlags)
  */
 void StageManager::shutdown()
 {
-
     //Halt system 
     while(1) {;}
 }
@@ -176,21 +176,42 @@ Stage StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
     changeStage = currentStage;
 
 
-
     if(*eventFlags & EF_SHUTDOWN)
     {
         shutdown();
     }
 
-
-    if(*eventFlags & EF_CAN)
+    if(*eventFlags & EF_ADXL)
     {
-        processCan(taskFlags);
+        processAdxl(taskFlags);
         
         //clearing the EF so we don't trigger this again
-        *eventFlags &= ~EF_CAN;
+        *eventFlags &= ~EF_ADXL;
     }
 
+    if(*eventFlags & EF_RTC)
+    {
+        processRtc(taskFlags);
+        
+        //clearing the EF so we don't trigger this again
+        *eventFlags &= ~EF_RTC;
+    }
+
+    if(*eventFlags & EF_BLE)
+    {
+        processBle(taskFlags);
+        
+        //clearing the EF so we don't trigger this again
+        *eventFlags &= ~EF_BLE;
+    }
+
+    if(*eventFlags & TIMER_F_EEPROM)
+    {
+        processEeprom(taskFlags);
+        
+        //clearing the EF so we don't trigger this again
+        *eventFlags &= ~TIMER_F_EEPROM;
+    }
 
     if(*eventFlags & TIMER_F_OLED)
     {
@@ -210,7 +231,43 @@ Stage StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
  * @note   
  * @retval 
  */
-void StageManager::processCan(uint8_t* taskFlags)
+void StageManager::processAdxl(uint8_t* taskFlags)
+{
+
+
+}
+
+
+/** 
+ * @brief  
+ * @note   
+ * @retval 
+ */
+void StageManager::processRtc(uint8_t* taskFlags)
+{
+
+
+}
+
+
+/** 
+ * @brief  
+ * @note   
+ * @retval 
+ */
+void StageManager::processBle(uint8_t* taskFlags)
+{
+
+
+}
+
+
+/** 
+ * @brief  
+ * @note   
+ * @retval 
+ */
+void StageManager::processEeprom(uint8_t* taskFlags)
 {
 
 

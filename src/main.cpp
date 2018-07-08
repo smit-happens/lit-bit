@@ -26,6 +26,11 @@ void timerISR() {
 }
 
 
+void adxlISR() {
+    
+}
+
+
 int main(void)
 {
     //initialize board for arduino functionality

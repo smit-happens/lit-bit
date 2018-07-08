@@ -45,7 +45,7 @@ AdxlController::~AdxlController(void)
  */
 void AdxlController::init(void)
 {
-    //Logger::getInstance()->addSubscriber(_pInstance);
     adxlModel = new Adxl();
+    adxlModel->setupTap();
 }
 

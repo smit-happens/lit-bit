@@ -9,7 +9,6 @@
 #ifndef BLUETOOTH_HPP
 #define BLUETOOTH_HPP
 
-#include <SPI.h>
 #include <Adafruit_BLE_UART.h>              //library from https://github.com/adafruit/Adafruit_nRF8001
 #include "../BaseModel/BaseModel.hpp"
 #include "../Constants/Port.hpp"

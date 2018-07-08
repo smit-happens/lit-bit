@@ -28,8 +28,23 @@ Adxl::Adxl(void)
  */
 Adxl::~Adxl(void)
 {
-
+    delete adxlLib;
 }
+
+
+void Adxl::setupTap()
+{
+    //enable the single/double tap functionality
+    adxlLib->setTapDuration(100);
+    //detect the taps on the Z axis 
+    adxlLib->setTapDetectionOnZ(true);
+    //enable the interrupt for single tap
+    adxlLib->singleTapINT(true);
+    //map the single tap interrupt to the int1 pin on the adxl
+    adxlLib->setInterruptMapping(ADXL345_INT_SINGLE_TAP_BIT, ADXL345_INT1_PIN);
+    //default interupt logic is active high
+}
+
 
 void Adxl::storeAccelXYZ(void)
 {
