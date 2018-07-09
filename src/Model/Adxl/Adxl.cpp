@@ -13,6 +13,9 @@
  */
 Adxl::Adxl(void)
 {
+    //setting the interrupt pin as an input
+    pinMode(LB_ADXL_INT1, INPUT);
+
     adxlLib = new ADXL345();
 
     // Power on the ADXL345
@@ -20,6 +23,12 @@ Adxl::Adxl(void)
 
     //initialize the accel to 0 since no readings have been done
     xyz = { 0 };
+
+    //FIXME: testing code
+    adxlLib->disableAllInterrupts();
+
+    adxlLib->enableFIFOMode();
+    
 }
 
 
@@ -35,7 +44,9 @@ Adxl::~Adxl(void)
 void Adxl::setupTap()
 {
     //enable the single/double tap functionality
-    adxlLib->setTapDuration(100);
+    adxlLib->setTapDuration(5);
+    //set the tap threshold
+    adxlLib->setTapThreshold(5);
     //detect the taps on the Z axis 
     adxlLib->setTapDetectionOnZ(true);
     //enable the interrupt for single tap
@@ -50,13 +61,6 @@ void Adxl::storeAccelXYZ(void)
 {
     // adxlLib->get_Gxyz(xyz);
     adxlLib->readAccel(xyz);
-
-    // Serial.print("x = ");
-    // Serial.println(xyz[0]);
-    // Serial.print("y = ");
-    // Serial.println(xyz[1]);
-    // Serial.print("z = ");
-    // Serial.println(xyz[2]);
 }
 
 

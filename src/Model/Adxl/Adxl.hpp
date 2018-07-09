@@ -12,12 +12,13 @@
 #include "../BaseModel/BaseModel.hpp"
 #include "../Constants/Flags.hpp"
 #include <SparkFun_ADXL345.h>           //Source: https://github.com/shirish47/SparkFun_ADXL345_Arduino_Library
-#include <Wire.h>
 
 
 class Adxl : public BaseModel
 {
 public:
+    ADXL345* adxlLib;
+
     Adxl(void);
     ~Adxl(void);
 
@@ -30,8 +31,6 @@ public:
     
 
 private:
-    ADXL345* adxlLib;
-
     int* xyz;
 
 };

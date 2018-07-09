@@ -49,3 +49,21 @@ void AdxlController::init(void)
     adxlModel->setupTap();
 }
 
+
+void AdxlController::getInterruptSource(void)
+{
+    //storing the interrupts that triggered in the adxl
+    uint8_t interruptStatus = adxlModel->adxlLib->getInterruptSource();
+
+    if(adxlModel->adxlLib->triggered(interruptStatus, ADXL345_SINGLE_TAP))
+    {
+        Serial.println("single tap");
+    }
+
+    if(adxlModel->adxlLib->triggered(interruptStatus, ADXL345_DATA_READY))
+    {
+        //trying to read the data in the data registers to clear the interrupt
+        adxlModel->storeAccelXYZ();
+    }
+
+}

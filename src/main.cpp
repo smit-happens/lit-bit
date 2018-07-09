@@ -42,7 +42,7 @@ int main(void)
         USBDevice.attach();
     #endif
 
-    Serial.begin(115200);
+    Serial.begin(9600);
     while (!Serial) {
         ; // wait for serial port to connect
     }
@@ -76,6 +76,17 @@ int main(void)
     oledC->init();
     bleC->init();
 
+
+    /*
+            _   _             _     _                _       _                             _
+       __ _| |_| |_ __ _  ___| |__ (_)_ __   __ _   (_)_ __ | |_ ___ _ __ _ __ _   _ _ __ | |_ ___
+      / _` | __| __/ _` |/ __| '_ \| | '_ \ / _` |  | | '_ \| __/ _ \ '__| '__| | | | '_ \| __/ __|
+     | (_| | |_| || (_| | (__| | | | | | | | (_| |  | | | | | ||  __/ |  | |  | |_| | |_) | |_\__ \
+      \__,_|\__|\__\__,_|\___|_| |_|_|_| |_|\__, |  |_|_| |_|\__\___|_|  |_|   \__,_| .__/ \__|___/
+                                            |___/                                   |_|
+    */
+    //Adxl interrupt
+    attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
 
     //set the desired sleep mode
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);

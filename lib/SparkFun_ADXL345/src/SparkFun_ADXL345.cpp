@@ -718,6 +718,7 @@ void ADXL345::waterMarkINT(bool status) {
         setInterrupt( ADXL345_INT_WATERMARK_BIT, 0);
     }
 }
+
 //FIFO mode Functions
 void ADXL345::enableFIFOMode()
 {
@@ -759,14 +760,16 @@ byte ADXL345::getFIFOcounts()
     //_b = 0x1f & _b;
     return _b;
 }
+
+
 void ADXL345::setMeasureMode(bool t)
 {
     byte _b=0;
     readFrom(ADXL345_POWER_CTL, 1, &_b);
     if(t)
-        _b |=  (0x1<<3);
+        _b |=  (0x1<<3);	//places adxl into measurement mode
     else
-        _b &= ~(0x1<< 3);
+        _b &= ~(0x1<< 3);	//places adxl into standby mode
     writeTo(ADXL345_POWER_CTL, _b);
 }
 

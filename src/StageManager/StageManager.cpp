@@ -185,7 +185,7 @@ Stage StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
     {
         processAdxl(taskFlags);
         
-        //clearing the EF so we don't trigger this again
+        //clearing the ADXL EF
         *eventFlags &= ~EF_ADXL;
     }
 
@@ -193,7 +193,7 @@ Stage StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
     {
         processRtc(taskFlags);
         
-        //clearing the EF so we don't trigger this again
+        //clearing the RTC EF
         *eventFlags &= ~EF_RTC;
     }
 
@@ -201,7 +201,7 @@ Stage StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
     {
         processBle(taskFlags);
         
-        //clearing the EF so we don't trigger this again
+        //clearing the BLE EF
         *eventFlags &= ~EF_BLE;
     }
 
@@ -209,7 +209,7 @@ Stage StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
     {
         processEeprom(taskFlags);
         
-        //clearing the EF so we don't trigger this again
+        //clearing the EEPROM EF
         *eventFlags &= ~TIMER_F_EEPROM;
     }
 
@@ -217,7 +217,7 @@ Stage StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
     {
         processOled(taskFlags);
         
-        //clearing the EF so we don't trigger this again
+        //clearing the OLED EF
         *eventFlags &= ~TIMER_F_OLED;
     }
 
@@ -233,8 +233,7 @@ Stage StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
  */
 void StageManager::processAdxl(uint8_t* taskFlags)
 {
-
-
+    AdxlController::getInstance()->getInterruptSource();
 }
 
 

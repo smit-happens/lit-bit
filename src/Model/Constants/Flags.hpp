@@ -33,6 +33,6 @@ enum DeviceName
     BLE,
     OLED,
     NUM_DEVICES //The number of devices, MAINTAIN AT END OF ENUM
-};s
+};
 
 #endif //FLAGS_HPP

@@ -17,10 +17,11 @@ class AdxlController : public BaseController
 {
 public:
     ~AdxlController(void);
-
     static AdxlController*   getInstance();
 
     void init(void);
+
+    void getInterruptSource(void);
 
 
 private:
