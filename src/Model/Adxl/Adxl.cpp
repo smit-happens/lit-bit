@@ -21,8 +21,11 @@ Adxl::Adxl(void)
     // Power on the ADXL345
     adxlLib->powerOn();
 
+    //set range to +- 4G
+    adxlLib->setRangeSetting(4); 
+
     //initialize the accel to 0 since no readings have been done
-    xyz = { 0 };
+    xyz = new int[3];
 
     //FIXME: testing code
     // adxlLib->disableAllInterrupts();

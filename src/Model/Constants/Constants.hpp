@@ -33,7 +33,7 @@ const int TIMER_NUM     = 2;    //number of timers in use
 const int POLL_TIME_OLED    = 300;
 
 //adxl polling delay
-const int POLL_TIME_ADXL    = 50;
+const int POLL_TIME_ADXL    = 150;
 
 
 //General Event Flags for devices

@@ -90,6 +90,7 @@ int main(void)
     //Adxl interrupt
     // attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
 
+    //start timer
     Timer1.initialize(1000);    //in usec
     Timer1.attachInterrupt(timerISR);
 
@@ -114,8 +115,6 @@ int main(void)
 
     //initialize task flag array to zero
     uint8_t localTaskFlags[NUM_DEVICES] = { 0 };
-
-    //start timer
 
     //---------------------------------------------------------------
     // Begin main program Super Loop

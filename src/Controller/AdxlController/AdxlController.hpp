@@ -24,7 +24,7 @@ public:
     void getInterruptSource(void);
 
     int getMagnitude(void);
-
+    void printValues();
 
 private:
     //Private contstructor so that it can't be called

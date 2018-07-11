@@ -81,9 +81,24 @@ int AdxlController::getMagnitude(void)
     int z = adxlModel->getZ();
 
     //square all the axis and add them up
-    magnitude = x * x + y * y + z * z;
-
-    magnitude = sqrt(magnitude);
+    magnitude = (x + y + z)*(x + y + z);
 
     return magnitude;
+}
+
+
+void AdxlController::printValues()
+{
+    //update the xyz data
+    adxlModel->storeAccelXYZ();
+
+    int xyz[3];
+
+    adxlModel->adxlLib->readAccel(xyz);
+
+    Serial.print(xyz[0]);
+    Serial.print(", ");
+    Serial.print(xyz[1]);
+    Serial.print(", ");
+    Serial.println(xyz[2]);
 }

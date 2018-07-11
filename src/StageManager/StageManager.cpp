@@ -143,9 +143,11 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
 void StageManager::processAdxl(uint8_t* taskFlags)
 {
     // AdxlController::getInstance()->getInterruptSource();
-    int magnitude = AdxlController::getInstance()->getMagnitude();
+    // int magnitude = AdxlController::getInstance()->getMagnitude();
 
-    Serial.println(magnitude);
+    // Serial.println(magnitude);
+    
+    AdxlController::getInstance()->printValues();
 }
 
 
