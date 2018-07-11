@@ -23,6 +23,8 @@ public:
 
     void getInterruptSource(void);
 
+    int getMagnitude(void);
+
 
 private:
     //Private contstructor so that it can't be called

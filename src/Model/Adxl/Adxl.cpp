@@ -25,9 +25,9 @@ Adxl::Adxl(void)
     xyz = { 0 };
 
     //FIXME: testing code
-    adxlLib->disableAllInterrupts();
+    // adxlLib->disableAllInterrupts();
 
-    adxlLib->enableFIFOMode();
+    // adxlLib->enableFIFOMode();
     
 }
 
@@ -54,6 +54,11 @@ void Adxl::setupTap()
     //map the single tap interrupt to the int1 pin on the adxl
     adxlLib->setInterruptMapping(ADXL345_INT_SINGLE_TAP_BIT, ADXL345_INT1_PIN);
     //default interupt logic is active high
+}
+
+void Adxl::setupDataRate()
+{
+    
 }
 
 

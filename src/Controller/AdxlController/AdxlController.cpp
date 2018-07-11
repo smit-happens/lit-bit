@@ -46,7 +46,7 @@ AdxlController::~AdxlController(void)
 void AdxlController::init(void)
 {
     adxlModel = new Adxl();
-    adxlModel->setupTap();
+    // adxlModel->setupTap();
 }
 
 
@@ -66,4 +66,24 @@ void AdxlController::getInterruptSource(void)
         adxlModel->storeAccelXYZ();
     }
 
+}
+
+
+int AdxlController::getMagnitude(void)
+{
+    int magnitude = 0;
+    
+    //update the xyz data
+    adxlModel->storeAccelXYZ();
+
+    int x = adxlModel->getX();
+    int y = adxlModel->getY();
+    int z = adxlModel->getZ();
+
+    //square all the axis and add them up
+    magnitude = x * x + y * y + z * z;
+
+    magnitude = sqrt(magnitude);
+
+    return magnitude;
 }

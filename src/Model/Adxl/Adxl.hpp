@@ -10,7 +10,6 @@
 #define ADXL_HPP
 
 #include "../BaseModel/BaseModel.hpp"
-#include "../Constants/Flags.hpp"
 #include <SparkFun_ADXL345.h>           //Source: https://github.com/shirish47/SparkFun_ADXL345_Arduino_Library
 
 
@@ -23,6 +22,7 @@ public:
     ~Adxl(void);
 
     void setupTap(void);
+    void setupDataRate();
 
     void storeAccelXYZ(void);
     int getX(void);

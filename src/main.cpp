@@ -7,6 +7,7 @@
  */
 
 #include <Arduino.h>
+#include <TimerOne.h>
 
 //AVR library imports
 #include <avr/sleep.h>
@@ -57,6 +58,7 @@ int main(void)
     power_spi_enable();
     power_twi_enable();
     power_timer0_enable();
+    power_timer1_enable();
     #ifdef DEBUG
         power_usb_enable();
     #endif
@@ -86,7 +88,10 @@ int main(void)
                                             |___/                                   |_|
     */
     //Adxl interrupt
-    attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
+    // attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
+
+    Timer1.initialize(1000);    //in usec
+    Timer1.attachInterrupt(timerISR);
 
     //set the desired sleep mode
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
@@ -110,6 +115,8 @@ int main(void)
     //initialize task flag array to zero
     uint8_t localTaskFlags[NUM_DEVICES] = { 0 };
 
+    //start timer
+
     //---------------------------------------------------------------
     // Begin main program Super Loop
     while(true)
@@ -122,13 +129,12 @@ int main(void)
 
         interrupts();
 
-        
         //transfering timer event flags to local EF
         localEventFlags |= timerEventFlags << 8;
 
 
         //processing stage returns the next stage
-        localStage.currentStage = localStage.processStage(&localEventFlags, localTaskFlags);
+        localStage.processStage(&localEventFlags, localTaskFlags);
 
         //checking if we need to update the timers
         if(localEventFlags & EF_TIMER)
