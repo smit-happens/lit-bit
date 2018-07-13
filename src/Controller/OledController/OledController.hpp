@@ -16,27 +16,20 @@
 class OledController : public BaseController
 {
 public:
+    Oled* oledModel;
+
     ~OledController(void);
-
     static OledController*   getInstance();
-
     void init(void);
 
 
 private:
     //Private contstructor so that it can't be called
     OledController() {};
-
     //copy constructor is private
     OledController(OledController const&) {};
-
     //static instance pointer
     static OledController* _pInstance;
-
-
-    //private instance of model
-    Oled* oledModel;
-    
 };
 
 

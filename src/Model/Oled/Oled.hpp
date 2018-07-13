@@ -18,16 +18,13 @@
 class Oled : public BaseModel
 {
 public:
+    MicroOLED *display;
+
     Oled(void);
     ~Oled(void);
 
 
 private:
-    bool dirtyBit = false; //if buffer has been modified
-
-    //private instance of the ST7565 object for our GLCD
-    MicroOLED *display;    // I2C declaration
-
 
 };
 

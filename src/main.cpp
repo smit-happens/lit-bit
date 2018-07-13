@@ -20,6 +20,11 @@
 volatile uint16_t globalEventFlags = 0;
 uint8_t globalTaskFlags [NUM_DEVICES] = { 0 };
 
+//BLE global transfer variables
+//possible to do this with ACI as well
+uint8_t* globalBleBuffer;
+uint8_t globalBleBufferLength;
+
 
 //Start of ISR declarations
 void timerISR() {
@@ -32,6 +37,21 @@ void adxlISR() {
     globalEventFlags        |= EF_ADXL;
 }
 
+//BLE ACI change handler (ignore the aci event, we'll grab that later)
+void BleAciISR(aci_evt_opcode_t) {
+    globalEventFlags        |= EF_BLE;
+    globalTaskFlags[BLE]    |= TF_BLE_ACI;
+}
+
+//BLE RX handler
+void BleRxISR(uint8_t *buffer, uint8_t len) {
+    globalEventFlags        |= EF_BLE;
+    globalTaskFlags[BLE]    |= TF_BLE_RX;
+
+    //storing data
+    globalBleBuffer = buffer;
+    globalBleBufferLength = len;
+}
 
 int main(void)
 {
@@ -44,9 +64,9 @@ int main(void)
     #endif
 
     Serial.begin(9600);
-    while (!Serial) {
-        ; // wait for serial port to connect
-    }
+    // while (!Serial) {
+    //     ; // wait for serial port to connect
+    // }
 
     delay(500);
 
@@ -77,6 +97,12 @@ int main(void)
     adxlC->init();
     oledC->init();
     bleC->init();
+
+    //setup BLE
+    bleC->bluetoothModel->bluetooth->setRXcallback(BleRxISR);
+    bleC->bluetoothModel->bluetooth->setACIcallback(BleAciISR); //grabbing the reference of the function
+    bleC->bluetoothModel->bluetooth->setDeviceName("LIT BIT"); /* 7 characters max! */
+    bleC->bluetoothModel->bluetooth->begin();
 
 
     /*
@@ -126,18 +152,18 @@ int main(void)
         localEventFlags |= globalEventFlags;
         globalEventFlags = 0;
 
-        interrupts();
-
         // Tell the nRF8001 to do whatever it should be working on.
-        // AKA update the bluetooth state
+        // AKA update the bluetooth ACI state
         bleC->bluetoothModel->bluetooth->pollACI();
 
-        //checking to see if we have new CAN messages to process
-        if(bleC->bluetoothModel->isAciDiff())
+        //clearing global task flags for every device
+        for(int i = 0; i < DeviceName::NUM_DEVICES; i++ )
         {
-            localEventFlags        |= EF_BLE;
-            localTaskFlags[BLE]    |= TF_BLE_ACI;
+            localTaskFlags[i] |= globalTaskFlags[i];
+            globalTaskFlags[i] = 0;
         }
+
+        interrupts();
 
         //transfering timer event flags to local EF
         localEventFlags |= timerEventFlags << 8;

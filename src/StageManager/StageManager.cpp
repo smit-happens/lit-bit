@@ -170,6 +170,56 @@ void StageManager::processRtc(uint8_t* taskFlags)
  */
 void StageManager::processBle(uint8_t* taskFlags)
 {
+    //local bluetooth lib reference
+    Adafruit_BLE_UART* BleLib = bleC->bluetoothModel->bluetooth;
+    //local oled reference
+    MicroOLED* oledLib = oledC->oledModel->display;
+
+    if(taskFlags[BLE] & TF_BLE_ACI)
+    {
+        aci_evt_opcode_t status = BleLib->getState();
+
+        switch(status)
+        {
+            case ACI_EVT_DEVICE_STARTED:
+                Serial.println(F("Advertising started"));
+            break;
+
+            case ACI_EVT_CONNECTED:
+                Serial.println(F("Connected!"));
+            break;
+
+            case ACI_EVT_DISCONNECTED:
+                Serial.println(F("Disconnected or advertising timed out"));
+            break;
+
+            case ACI_EVT_DATA_RECEIVED:
+                //TODO: see if this ever triggers
+            break;
+
+            default:
+            break;
+        }
+        taskFlags[BLE] &= ~TF_BLE_ACI;
+    }
+    if(taskFlags[BLE] & TF_BLE_RX)
+    {
+        oledLib->clear(PAGE);
+        oledLib->setCursor(0,0);
+
+        while (BleLib->available()) {
+            char c = BleLib->read();
+            Serial.print(c);
+            
+            oledLib->write(c);
+        }
+        Serial.println();
+
+        //update display
+        oledLib->display();
+
+        taskFlags[BLE] &= ~TF_BLE_RX;
+    }
 
 
 }
