@@ -207,6 +207,7 @@ void StageManager::processBle(uint8_t* taskFlags)
         oledLib->clear(PAGE);
         oledLib->setCursor(0,0);
 
+        // //reading in one char at a time
         while (BleLib->available()) {
             char c = BleLib->read();
             Serial.print(c);
@@ -214,6 +215,27 @@ void StageManager::processBle(uint8_t* taskFlags)
             oledLib->write(c);
         }
         Serial.println();
+        
+
+        // char* seqToSearchFor = "LB";
+        // char* output = NULL;
+        // output = strstr((char*)bleC->localBleBuffer, seqToSearchFor);
+
+        // if(output)
+        //     oledLib->println("cmd recieved!");
+        // else
+        // {
+        //     // for(int i =0; i < bleC->localBleBufferLength; i++)
+        //     //     oledLib->write(bleC->localBleBuffer[i]);
+        //         while (BleLib->available()) {
+        //             char c = BleLib->read();
+        //             Serial.print(c);
+                    
+        //             oledLib->write(c);
+        //         }
+
+        // }
+
 
         //update display
         oledLib->display();

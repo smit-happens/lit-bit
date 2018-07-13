@@ -156,6 +156,13 @@ int main(void)
         // AKA update the bluetooth ACI state
         bleC->bluetoothModel->bluetooth->pollACI();
 
+        //check if we have new data in the BLE buffer
+        if((globalEventFlags & EF_BLE) && (globalTaskFlags[BLE] & TF_BLE_RX))
+        {
+            bleC->localBleBuffer = globalBleBuffer;
+            bleC->localBleBufferLength = globalBleBufferLength;
+        }
+
         //clearing global task flags for every device
         for(int i = 0; i < DeviceName::NUM_DEVICES; i++ )
         {

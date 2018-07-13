@@ -17,6 +17,8 @@ class BleController : public BaseController
 {
 public:
     Bluetooth* bluetoothModel;
+    uint8_t* localBleBuffer;
+    uint8_t  localBleBufferLength;
 
 
     ~BleController(void);
