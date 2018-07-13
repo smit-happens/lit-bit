@@ -26,9 +26,9 @@ public:
 
     void forward();
 
-private:
-    
+    bool isAciDiff();
 
+private:
 };
 
 

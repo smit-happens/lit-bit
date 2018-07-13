@@ -8,9 +8,12 @@
 
 #include "Bluetooth.hpp"
 
+//state when BLE is turning on
+aci_evt_opcode_t lastAci = ACI_EVT_DISCONNECTED;
 
+//global b/c libraries issues
 void aciCallback(aci_evt_opcode_t event);
-void rxCallback(uint8_t *buffer, uint8_t len);
+
 
 /** 
  * @brief  Bluetooth constructor
@@ -19,8 +22,8 @@ Bluetooth::Bluetooth(void)
 {
     bluetooth = new Adafruit_BLE_UART(LB_BLE_REQ, LB_BLE_RDY, LB_BLE_RST);
 
-    bluetooth->setRXcallback(rxCallback);
-    bluetooth->setACIcallback(aciCallback);
+    // bluetooth->setRXcallback(rxCallback);
+    bluetooth->setACIcallback(aciCallback); //grabbing the reference of the function
     bluetooth->setDeviceName("LIT BIT"); /* 7 characters max! */
     bluetooth->begin();
 
@@ -32,7 +35,8 @@ Bluetooth::Bluetooth(void)
  */
 Bluetooth::~Bluetooth(void)
 {
-    delete bluetooth;
+    // b/c polymorphic class type 'Adafruit_BLE_UART' has non-virtual destructor might cause undefined behaviour
+    // delete bluetooth;
 }
 
 
@@ -41,42 +45,28 @@ Bluetooth::~Bluetooth(void)
 */
 void aciCallback(aci_evt_opcode_t event)
 {
-  switch(event)
-  {
-    case ACI_EVT_DEVICE_STARTED:
-      Serial.println(F("Advertising started"));
-      break;
-    case ACI_EVT_CONNECTED:
-      Serial.println(F("Connected!"));
-      break;
-    case ACI_EVT_DISCONNECTED:
-      Serial.println(F("Disconnected or advertising timed out"));
-      break;
-    default:
-      break;
-  }
+    switch(event)
+    {
+        case ACI_EVT_DEVICE_STARTED:
+            Serial.println(F("Advertising started"));
+        break;
+        case ACI_EVT_CONNECTED:
+            Serial.println(F("Connected!"));
+        break;
+        case ACI_EVT_DISCONNECTED:
+            Serial.println(F("Disconnected or advertising timed out"));
+        break;
+        default:
+        break;
+    }
+
+
+    lastAci = event;
 }
 
 
-/*!
-    This function is called whenever data arrives on the RX channel
-*/
-void rxCallback(uint8_t *buffer, uint8_t len)
+bool Bluetooth::isAciDiff(void)
 {
-  Serial.print(F("Received "));
-  Serial.print(len);
-  Serial.print(F(" bytes: "));
-  for(int i=0; i<len; i++)
-   Serial.print((char)buffer[i]); 
-
-  Serial.print(F(" ["));
-
-  for(int i=0; i<len; i++)
-  {
-    Serial.print(" 0x"); Serial.print((char)buffer[i], HEX); 
-  }
-  Serial.println(F(" ]"));
-
-  /* Echo the same data back! */
-//   bluetooth.write(buffer, len);
+    //check if the last Aci is the same or different as the current
+    return lastAci != bluetooth->getState();
 }

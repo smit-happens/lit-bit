@@ -17,7 +17,7 @@
 
 
 //global variable that all the ISRs will flag for their respective event to run
-volatile uint32_t globalEventFlags = 0;
+volatile uint16_t globalEventFlags = 0;
 uint8_t globalTaskFlags [NUM_DEVICES] = { 0 };
 
 
@@ -131,6 +131,13 @@ int main(void)
         // Tell the nRF8001 to do whatever it should be working on.
         // AKA update the bluetooth state
         bleC->bluetoothModel->bluetooth->pollACI();
+
+        //checking to see if we have new CAN messages to process
+        if(bleC->bluetoothModel->isAciDiff())
+        {
+            localEventFlags        |= EF_BLE;
+            localTaskFlags[BLE]    |= TF_BLE_ACI;
+        }
 
         //transfering timer event flags to local EF
         localEventFlags |= timerEventFlags << 8;

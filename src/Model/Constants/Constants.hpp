@@ -48,6 +48,16 @@ const uint8_t TIMER_F_OLED         = 0b1;  //OLED Timer mask
 const uint8_t TIMER_F_EEPROM       = 0b10;  //EEPROM Timer mask
 const uint8_t TIMER_F_ADXL         = 0b100;  //ADXL Timer mask
 
+//task flags (TF) for specific tasks a device can do
+//BLE
+const uint8_t TF_BLE_ACI           = 0b1;
+// const uint8_t TF_DASH_RTD           = 0b10;
+// const uint8_t TF_DASH_SHUTDOWN      = 0b100;
+// const uint8_t TF_DASH_STANDBY       = 0b1000;
+// const uint8_t TF_DASH_WAYNE_WORLD   = 0b10000;
+// const uint8_t TF_DASH_ENCODER       = 0b100000;
+
+
 //this enum is used as an index in the lookup table
 //specifies each device for the lit bit
 enum DeviceName
