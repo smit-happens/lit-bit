@@ -38,6 +38,15 @@ private:
     Timer* timerList;
     uint8_t timerTF = 0;
 
+    //local controller initialization
+    I2cController* i2cC          = I2cController::getInstance();
+    EepromController* eepromC    = EepromController::getInstance();
+    RtcController* rtcC          = RtcController::getInstance();
+    AdxlController* adxlC        = AdxlController::getInstance();
+    OledController* oledC        = OledController::getInstance();
+    BleController* bleC          = BleController::getInstance();
+
+
     //Processing functions for the various devices
     void processAdxl(uint8_t* taskFlags);
     void processRtc(uint8_t* taskFlags);

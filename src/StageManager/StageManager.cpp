@@ -147,7 +147,7 @@ void StageManager::processAdxl(uint8_t* taskFlags)
 
     // Serial.println(magnitude);
     
-    AdxlController::getInstance()->printValues();
+    // AdxlController::getInstance()->printValues();
 }
 
 

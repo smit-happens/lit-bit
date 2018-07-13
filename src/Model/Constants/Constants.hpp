@@ -27,13 +27,13 @@ enum I2cDevices{
 };
 
 
-const int TIMER_NUM     = 2;    //number of timers in use
+//number of timers in use
+const int TIMER_NUM     = 2;
 
-//OLED polling delay
+//polling delays
 const int POLL_TIME_OLED    = 300;
-
-//adxl polling delay
 const int POLL_TIME_ADXL    = 150;
+const int POLL_TIME_BLE     = 150;
 
 
 //General Event Flags for devices

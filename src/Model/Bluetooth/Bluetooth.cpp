@@ -9,6 +9,9 @@
 #include "Bluetooth.hpp"
 
 
+void aciCallback(aci_evt_opcode_t event);
+void rxCallback(uint8_t *buffer, uint8_t len);
+
 /** 
  * @brief  Bluetooth constructor
  */
@@ -16,12 +19,10 @@ Bluetooth::Bluetooth(void)
 {
     bluetooth = new Adafruit_BLE_UART(LB_BLE_REQ, LB_BLE_RDY, LB_BLE_RST);
 
-    // bluetooth->setRXcallback(rxCallback);
-    // bluetooth->setACIcallback(aciCallback);
-    // bluetooth->setDeviceName("NEWNAME"); /* 7 characters max! */
+    bluetooth->setRXcallback(rxCallback);
+    bluetooth->setACIcallback(aciCallback);
+    bluetooth->setDeviceName("LIT BIT"); /* 7 characters max! */
     bluetooth->begin();
-
-    bluetooth->pollACI();
 
 }
 
@@ -57,25 +58,25 @@ void aciCallback(aci_evt_opcode_t event)
 }
 
 
-// /*!
-//     This function is called whenever data arrives on the RX channel
-// */
-// void rxCallback(uint8_t *buffer, uint8_t len)
-// {
-//   Serial.print(F("Received "));
-//   Serial.print(len);
-//   Serial.print(F(" bytes: "));
-//   for(int i=0; i<len; i++)
-//    Serial.print((char)buffer[i]); 
+/*!
+    This function is called whenever data arrives on the RX channel
+*/
+void rxCallback(uint8_t *buffer, uint8_t len)
+{
+  Serial.print(F("Received "));
+  Serial.print(len);
+  Serial.print(F(" bytes: "));
+  for(int i=0; i<len; i++)
+   Serial.print((char)buffer[i]); 
 
-//   Serial.print(F(" ["));
+  Serial.print(F(" ["));
 
-//   for(int i=0; i<len; i++)
-//   {
-//     Serial.print(" 0x"); Serial.print((char)buffer[i], HEX); 
-//   }
-//   Serial.println(F(" ]"));
+  for(int i=0; i<len; i++)
+  {
+    Serial.print(" 0x"); Serial.print((char)buffer[i], HEX); 
+  }
+  Serial.println(F(" ]"));
 
-//   /* Echo the same data back! */
+  /* Echo the same data back! */
 //   bluetooth.write(buffer, len);
-// }
+}

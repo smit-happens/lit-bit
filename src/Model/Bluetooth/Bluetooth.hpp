@@ -19,14 +19,15 @@
 class Bluetooth : public BaseModel
 {
 public:
+    Adafruit_BLE_UART *bluetooth;
+
     Bluetooth(void);
     ~Bluetooth(void);
 
     void forward();
 
 private:
-    //private instance of the bluetooth object
-    Adafruit_BLE_UART *bluetooth;
+    
 
 };
 

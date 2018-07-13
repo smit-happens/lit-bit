@@ -16,6 +16,9 @@
 class BleController : public BaseController
 {
 public:
+    Bluetooth* bluetoothModel;
+
+
     ~BleController(void);
 
     static BleController*   getInstance();
@@ -37,8 +40,8 @@ private:
     static BleController* _pInstance;
 
 
-    //private instance of model
-    Bluetooth* bluetoothModel;
+    // //private instance of model
+    // Bluetooth* bluetoothModel;
     
 };
 
