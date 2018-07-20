@@ -48,7 +48,7 @@ private:
 
 
     //Processing functions for the various devices
-    void processAdxl(uint8_t* taskFlags);
+    void processAdxl(uint16_t* eventFlags, uint8_t* taskFlags);
     void processRtc(uint8_t* taskFlags);
     void processBle(uint8_t* taskFlags);
     void processEeprom(uint8_t* taskFlags);

@@ -19,6 +19,7 @@ StageManager::StageManager(void)
     timerList[0].limit = POLL_TIME_OLED;
     timerList[1].limit = POLL_TIME_ADXL;
     
+    
     timerList[0].TFmask = TIMER_F_OLED;
     timerList[1].TFmask = TIMER_F_ADXL;
 
@@ -103,7 +104,7 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
     //FIXME: temp code to allow timers to poll the adxl
     if(*eventFlags & TIMER_F_ADXL << 8)
     {
-        processAdxl(taskFlags);
+        processAdxl(eventFlags, taskFlags);
         
         //clearing the Adxl timer EF
         *eventFlags &= ~TIMER_F_ADXL;
@@ -140,14 +141,19 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
  * @note   
  * @retval 
  */
-void StageManager::processAdxl(uint8_t* taskFlags)
+void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
 {
-    // AdxlController::getInstance()->getInterruptSource();
-    // int magnitude = AdxlController::getInstance()->getMagnitude();
+    adxl->getInterruptSource();
+    // int magnitude = adxl->getMagnitude();
+    // int z = adxl->getZ();
 
     // Serial.println(magnitude);
     
-    // AdxlController::getInstance()->printValues();
+    // adxl->printValues();
+
+    //need to activate the event & task flag of ble to have it trigger
+    *eventFlags |= EF_BLE; 
+    taskFlags[DEVICE_BLE] |= TF_BLE_TX;
 }
 
 
@@ -175,7 +181,7 @@ void StageManager::processBle(uint8_t* taskFlags)
     //local oled reference
     MicroOLED* oledLib = oled->display;
 
-    if(taskFlags[BLE] & TF_BLE_ACI)
+    if(taskFlags[DEVICE_BLE] & TF_BLE_ACI)
     {
         aci_evt_opcode_t status = BleLib->getState();
 
@@ -200,9 +206,12 @@ void StageManager::processBle(uint8_t* taskFlags)
             default:
             break;
         }
-        taskFlags[BLE] &= ~TF_BLE_ACI;
+        //reset the taskflag
+        taskFlags[DEVICE_BLE] &= ~TF_BLE_ACI;
     }
-    if(taskFlags[BLE] & TF_BLE_RX)
+
+    //perform if we receive any data over BLE
+    if(taskFlags[DEVICE_BLE] & TF_BLE_RX)
     {
         oledLib->clear(PAGE);
         oledLib->setCursor(0,0);
@@ -219,14 +228,14 @@ void StageManager::processBle(uint8_t* taskFlags)
 
         // char* seqToSearchFor = "LB";
         // char* output = NULL;
-        // output = strstr((char*)bleC->localBleBuffer, seqToSearchFor);
+        // output = strstr((char*)ble->localBleBuffer, seqToSearchFor);
 
         // if(output)
         //     oledLib->println("cmd recieved!");
         // else
         // {
-        //     // for(int i =0; i < bleC->localBleBufferLength; i++)
-        //     //     oledLib->write(bleC->localBleBuffer[i]);
+        //     // for(int i =0; i < ble->localBleBufferLength; i++)
+        //     //     oledLib->write(ble->localBleBuffer[i]);
         //         while (BleLib->available()) {
         //             char c = BleLib->read();
         //             Serial.print(c);
@@ -240,9 +249,24 @@ void StageManager::processBle(uint8_t* taskFlags)
         //update display
         oledLib->display();
 
-        taskFlags[BLE] &= ~TF_BLE_RX;
+        //reset the taskflag
+        taskFlags[DEVICE_BLE] &= ~TF_BLE_RX;
     }
 
+    //perform if we need to transmit data over BLE
+    if(taskFlags[DEVICE_BLE] & TF_BLE_TX)
+    {
+        //check if we're connected to a BLE device
+        if(BleLib->getState() == ACI_EVT_CONNECTED)
+        {
+            char c[10];
+            itoa(adxl->getZ(), c, 10);
+            BleLib->println(c);
+        }
+        
+        //reset the taskflag
+        taskFlags[DEVICE_BLE] &= ~TF_BLE_TX; 
+    }
 
 }
 

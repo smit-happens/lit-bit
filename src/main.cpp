@@ -18,7 +18,7 @@
 
 //global variable that all the ISRs will flag for their respective event to run
 volatile uint16_t globalEventFlags = 0;
-uint8_t globalTaskFlags [NUM_DEVICES] = { 0 };
+uint8_t globalTaskFlags [DEVICE_NUM] = { 0 };
 
 //BLE global transfer variables
 //possible to do this with ACI as well
@@ -39,14 +39,14 @@ void adxlISR() {
 
 //BLE ACI change handler (ignore the aci event, we'll grab that later)
 void BleAciISR(aci_evt_opcode_t) {
-    globalEventFlags        |= EF_BLE;
-    globalTaskFlags[BLE]    |= TF_BLE_ACI;
+    globalEventFlags                |= EF_BLE;
+    globalTaskFlags[DEVICE_BLE]     |= TF_BLE_ACI;
 }
 
 //BLE RX handler
 void BleRxISR(uint8_t *buffer, uint8_t len) {
-    globalEventFlags        |= EF_BLE;
-    globalTaskFlags[BLE]    |= TF_BLE_RX;
+    globalEventFlags                |= EF_BLE;
+    globalTaskFlags[DEVICE_BLE]     |= TF_BLE_RX;
 
     //storing data
     globalBleBuffer = buffer;
@@ -140,7 +140,7 @@ int main(void)
     uint8_t timerEventFlags = 0;
 
     //initialize task flag array to zero
-    uint8_t localTaskFlags[NUM_DEVICES] = { 0 };
+    uint8_t localTaskFlags[DEVICE_NUM] = { 0 };
 
     //---------------------------------------------------------------
     // Begin main program Super Loop
@@ -157,14 +157,14 @@ int main(void)
         ble->bluetooth->pollACI();
 
         //check if we have new data in the BLE buffer
-        if((globalEventFlags & EF_BLE) && (globalTaskFlags[BLE] & TF_BLE_RX))
+        if((globalEventFlags & EF_BLE) && (globalTaskFlags[DEVICE_BLE] & TF_BLE_RX))
         {
             ble->localBleBuffer = globalBleBuffer;
             ble->localBleBufferLength = globalBleBufferLength;
         }
 
         //clearing global task flags for every device
-        for(int i = 0; i < DeviceName::NUM_DEVICES; i++ )
+        for(int i = 0; i < Device::DEVICE_NUM; i++ )
         {
             localTaskFlags[i] |= globalTaskFlags[i];
             globalTaskFlags[i] = 0;
