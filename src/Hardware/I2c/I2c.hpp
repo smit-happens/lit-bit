@@ -9,19 +9,24 @@
 #ifndef I2C_HPP
 #define I2C_HPP
 
-#include "../BaseModel/BaseModel.hpp"
 #include <Wire.h>
 
 
-class I2c : public BaseModel
+class I2c
 {
 public:
-    I2c(void);
     ~I2c(void);
+    static I2c*   getInstance();
+    void init(void);
     
 
 private:
-
+    //Private contstructor so that it can't be called
+    I2c() {};
+    //copy constructor is private
+    I2c(I2c const&) {};
+    //static instance pointer
+    static I2c* _pInstance;
 
 
 };

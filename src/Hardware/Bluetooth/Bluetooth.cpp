@@ -15,10 +15,30 @@ aci_evt_opcode_t lastAci = ACI_EVT_DISCONNECTED;
 void aciCallback(aci_evt_opcode_t event);
 
 
+//to see if the instance of the class has been initialized yet
+Bluetooth* Bluetooth::_pInstance = NULL; 
+
 /** 
- * @brief  Bluetooth constructor
+ * @brief  Used to maintain the singleton format
+ * @note   
+ * @retval 
  */
-Bluetooth::Bluetooth(void)
+Bluetooth* Bluetooth::getInstance()
+{
+    // Only allow one instance of class to be generated.
+    if (!_pInstance)
+        _pInstance = new Bluetooth();
+
+    return _pInstance;
+}
+
+
+/** 
+ * @brief  
+ * @note   
+ * @retval 
+ */
+void Bluetooth::init(void)
 {
     bluetooth = new Adafruit_BLE_UART(LB_BLE_REQ, LB_BLE_RDY, LB_BLE_RST);
 
@@ -26,7 +46,6 @@ Bluetooth::Bluetooth(void)
     // bluetooth->setACIcallback(aciCallback); //grabbing the reference of the function
     // bluetooth->setDeviceName("LIT BIT"); /* 7 characters max! */
     // bluetooth->begin();
-
 }
 
 

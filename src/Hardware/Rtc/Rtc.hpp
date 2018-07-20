@@ -10,15 +10,15 @@
 #ifndef RTC_HPP
 #define RTC_HPP
 
-#include "../BaseModel/BaseModel.hpp"
 #include <MCP7940.h>
 
 
-class Rtc : public BaseModel
+class Rtc
 {
 public:
-    Rtc(void);
     ~Rtc(void);
+    static Rtc*   getInstance();
+    void init(void);
 
     /** 
      * Drafting up possible functions
@@ -31,6 +31,13 @@ public:
     //TODO: make alarm handling functions for the RTC
 
 private:
+    //Private contstructor so that it can't be called
+    Rtc() {};
+    //copy constructor is private
+    Rtc(Rtc const&) {};
+    //static instance pointer
+    static Rtc* _pInstance;
+
     MCP7940_Class* mcp7940Lib;
     
 };

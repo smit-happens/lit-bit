@@ -84,25 +84,25 @@ int main(void)
     #endif
 
     //controller initialization
-    I2cController* i2cC          = I2cController::getInstance();             //start the I2C first
-    EepromController* eepromC    = EepromController::getInstance();
-    RtcController* rtcC          = RtcController::getInstance();
-    AdxlController* adxlC        = AdxlController::getInstance();
-    OledController* oledC        = OledController::getInstance();
-    BleController* bleC          = BleController::getInstance();
+    I2c* i2c          = I2c::getInstance();             //start the I2 first
+    Eeprom* eeprom    = Eeprom::getInstance();
+    Rtc* rtc          = Rtc::getInstance();
+    Adxl* adxl        = Adxl::getInstance();
+    Oled* oled        = Oled::getInstance();
+    Bluetooth* ble    = Bluetooth::getInstance();
 
-    i2cC->init();       //initialize I2C first
-    eepromC->init();
-    rtcC->init();
-    adxlC->init();
-    oledC->init();
-    bleC->init();
+    i2c->init();       //initialize I2 first
+    eeprom->init();
+    rtc->init();
+    adxl->init();
+    oled->init();
+    ble->init();
 
     //setup BLE
-    bleC->bluetoothModel->bluetooth->setRXcallback(BleRxISR);
-    bleC->bluetoothModel->bluetooth->setACIcallback(BleAciISR); //grabbing the reference of the function
-    bleC->bluetoothModel->bluetooth->setDeviceName("LIT BIT"); /* 7 characters max! */
-    bleC->bluetoothModel->bluetooth->begin();
+    ble->bluetooth->setRXcallback(BleRxISR);
+    ble->bluetooth->setACIcallback(BleAciISR); //grabbing the reference of the function
+    ble->bluetooth->setDeviceName("LIT BIT"); /* 7 characters max! */
+    ble->bluetooth->begin();
 
 
     /*
@@ -154,13 +154,13 @@ int main(void)
 
         // Tell the nRF8001 to do whatever it should be working on.
         // AKA update the bluetooth ACI state
-        bleC->bluetoothModel->bluetooth->pollACI();
+        ble->bluetooth->pollACI();
 
         //check if we have new data in the BLE buffer
         if((globalEventFlags & EF_BLE) && (globalTaskFlags[BLE] & TF_BLE_RX))
         {
-            bleC->localBleBuffer = globalBleBuffer;
-            bleC->localBleBufferLength = globalBleBufferLength;
+            ble->localBleBuffer = globalBleBuffer;
+            ble->localBleBufferLength = globalBleBufferLength;
         }
 
         //clearing global task flags for every device

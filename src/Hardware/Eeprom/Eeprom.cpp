@@ -8,12 +8,22 @@
 
 #include "Eeprom.hpp"
 
-/** 
- * @brief  Eeprom constructor
- */
-Eeprom::Eeprom(void)
-{
 
+//to see if the instance of the class has been initialized yet
+Eeprom* Eeprom::_pInstance = NULL; 
+
+/** 
+ * @brief  Used to maintain the singleton format
+ * @note   
+ * @retval 
+ */
+Eeprom* Eeprom::getInstance()
+{
+    // Only allow one instance of class to be generated.
+    if (!_pInstance)
+        _pInstance = new Eeprom();
+
+    return _pInstance;
 }
 
 
@@ -21,6 +31,17 @@ Eeprom::Eeprom(void)
  * @brief  Eeprom destructor
  */
 Eeprom::~Eeprom(void)
+{
+
+}
+
+
+/** 
+ * @brief  
+ * @note   
+ * @retval 
+ */
+void Eeprom::init(void)
 {
 
 }
@@ -96,4 +117,35 @@ int Eeprom::readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* 
     }
     
     return result;
+}
+
+
+void Eeprom::test(void)
+{
+    uint8_t array[5], buffer[5];
+    for(int i = 0; i < 5; i++)
+    {
+        array[i] = random();
+        writeByte(array[i], 5);
+    }
+
+    readSequential(0, 4, buffer);
+
+    bool testPass = true;
+    for(int i = 0; i < 5; i++)
+    {
+        if(buffer[i]!=array[i])
+        {
+            testPass=false;
+        }
+    }
+    
+    if(testPass)
+    {
+        Serial.println("EEPROM Test Passed.");
+    }
+    else
+    {
+        Serial.println("EEPROM Test Failed.");
+    }
 }

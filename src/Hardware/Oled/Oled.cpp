@@ -9,10 +9,30 @@
 #include "Oled.hpp"
 
 
+//to see if the instance of the class has been initialized yet
+Oled* Oled::_pInstance = NULL; 
+
 /** 
- * @brief  Oled constructor
+ * @brief  Used to maintain the singleton format
+ * @note   
+ * @retval 
  */
-Oled::Oled(void)
+Oled* Oled::getInstance()
+{
+    // Only allow one instance of class to be generated.
+    if (!_pInstance)
+        _pInstance = new Oled();
+
+    return _pInstance;
+}
+
+
+/** 
+ * @brief  
+ * @note   
+ * @retval 
+ */
+void Oled::init(void)
 {
     //initialize the oled library
     display = new MicroOLED(PIN_RESET, DC_JUMPER);

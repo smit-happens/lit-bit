@@ -9,10 +9,30 @@
 #include "Rtc.hpp"
 
 
+//to see if the instance of the class has been initialized yet
+Rtc* Rtc::_pInstance = NULL; 
+
 /** 
- * @brief  Rtc constructor
+ * @brief  Used to maintain the singleton format
+ * @note   
+ * @retval 
  */
-Rtc::Rtc(void)
+Rtc* Rtc::getInstance()
+{
+    // Only allow one instance of class to be generated.
+    if (!_pInstance)
+        _pInstance = new Rtc();
+
+    return _pInstance;
+}
+
+
+/** 
+ * @brief  
+ * @note   
+ * @retval 
+ */
+void Rtc::init(void)
 {
     mcp7940Lib = new MCP7940_Class();
     
@@ -34,7 +54,7 @@ Rtc::Rtc(void)
     //display the time and date
     // Serial.println(mcp7940Lib->now().month());
     // Serial.println(mcp7940Lib->now().day());
-    // Serial.println(mcp7940Lib->now().year());    
+    // Serial.println(mcp7940Lib->now().year());  
 }
 
 
@@ -45,5 +65,3 @@ Rtc::~Rtc(void)
 {
 
 }
-
-

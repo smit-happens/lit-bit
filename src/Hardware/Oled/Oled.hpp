@@ -10,22 +10,28 @@
 #define OLED_HPP
 
 #include <SFE_MicroOLED.h>
-#include "../BaseModel/BaseModel.hpp"
 #include "../Constants/Port.hpp"
 #include "../Constants/Constants.hpp"
 
 
-class Oled : public BaseModel
+class Oled
 {
 public:
     MicroOLED *display;
 
-    Oled(void);
     ~Oled(void);
+
+    static Oled*   getInstance();
+    void init(void);
 
 
 private:
-
+    //Private contstructor so that it can't be called
+    Oled() {};
+    //copy constructor is private
+    Oled(Oled const&) {};
+    //static instance pointer
+    static Oled* _pInstance;
 };
 
 

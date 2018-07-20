@@ -8,10 +8,31 @@
 
 #include "Adxl.hpp"
 
+
+//to see if the instance of the class has been initialized yet
+Adxl* Adxl::_pInstance = NULL; 
+
 /** 
- * @brief  Adxl constructor
+ * @brief  Used to maintain the singleton format
+ * @note   
+ * @retval 
  */
-Adxl::Adxl(void)
+Adxl* Adxl::getInstance()
+{
+    // Only allow one instance of class to be generated.
+    if (!_pInstance)
+        _pInstance = new Adxl();
+
+    return _pInstance;
+}
+
+
+/** 
+ * @brief  
+ * @note   
+ * @retval 
+ */
+void Adxl::init(void)
 {
     //setting the interrupt pin as an input
     pinMode(LB_ADXL_INT1, INPUT);
@@ -31,7 +52,6 @@ Adxl::Adxl(void)
     // adxlLib->disableAllInterrupts();
 
     // adxlLib->enableFIFOMode();
-    
 }
 
 
@@ -41,6 +61,25 @@ Adxl::Adxl(void)
 Adxl::~Adxl(void)
 {
     delete adxlLib;
+}
+
+
+void Adxl::getInterruptSource(void)
+{
+    //storing the interrupts that triggered in the adxl
+    uint8_t interruptStatus = adxlLib->getInterruptSource();
+
+    if(adxlLib->triggered(interruptStatus, ADXL345_SINGLE_TAP))
+    {
+        Serial.println("single tap");
+    }
+
+    if(adxlLib->triggered(interruptStatus, ADXL345_DATA_READY))
+    {
+        //trying to read the data in the data registers to clear the interrupt
+        storeAccelXYZ();
+    }
+
 }
 
 

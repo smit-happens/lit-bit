@@ -171,9 +171,9 @@ void StageManager::processRtc(uint8_t* taskFlags)
 void StageManager::processBle(uint8_t* taskFlags)
 {
     //local bluetooth lib reference
-    Adafruit_BLE_UART* BleLib = bleC->bluetoothModel->bluetooth;
+    Adafruit_BLE_UART* BleLib = ble->bluetooth;
     //local oled reference
-    MicroOLED* oledLib = oledC->oledModel->display;
+    MicroOLED* oledLib = oled->display;
 
     if(taskFlags[BLE] & TF_BLE_ACI)
     {

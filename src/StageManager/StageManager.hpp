@@ -9,8 +9,8 @@
 #ifndef STAGEMANAGER_HPP
 #define STAGEMANAGER_HPP
 
-#include "../Controller/Controller.hpp"
-#include "../Model/Constants/Constants.hpp"
+#include "../Hardware/Hardware.hpp"
+#include "../Hardware/Constants/Constants.hpp"
 
 
 class StageManager
@@ -39,12 +39,12 @@ private:
     uint8_t timerTF = 0;
 
     //local controller initialization
-    I2cController* i2cC          = I2cController::getInstance();
-    EepromController* eepromC    = EepromController::getInstance();
-    RtcController* rtcC          = RtcController::getInstance();
-    AdxlController* adxlC        = AdxlController::getInstance();
-    OledController* oledC        = OledController::getInstance();
-    BleController* bleC          = BleController::getInstance();
+    I2c* i2c          = I2c::getInstance();
+    Eeprom* eeprom    = Eeprom::getInstance();
+    Rtc* rtc          = Rtc::getInstance();
+    Adxl* adxl        = Adxl::getInstance();
+    Oled* oled        = Oled::getInstance();
+    Bluetooth* ble    = Bluetooth::getInstance();
 
 
     //Processing functions for the various devices

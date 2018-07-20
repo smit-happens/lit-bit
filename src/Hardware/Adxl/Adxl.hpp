@@ -9,17 +9,18 @@
 #ifndef ADXL_HPP
 #define ADXL_HPP
 
-#include "../BaseModel/BaseModel.hpp"
 #include <SparkFun_ADXL345.h>           //Source: https://github.com/shirish47/SparkFun_ADXL345_Arduino_Library
+#include "../Constants/Port.hpp"
 
 
-class Adxl : public BaseModel
+class Adxl
 {
 public:
     ADXL345* adxlLib;
 
-    Adxl(void);
     ~Adxl(void);
+    static Adxl*   getInstance();
+    void init(void);
 
     void setupTap(void);
     void setupDataRate();
@@ -28,9 +29,21 @@ public:
     int getX(void);
     int getY(void);
     int getZ(void);
+
+    void getInterruptSource(void);
+
+    int getMagnitude(void);
+    void printValues();
     
 
 private:
+    //Private contstructor so that it can't be called
+    Adxl() {};
+    //copy constructor is private
+    Adxl(Adxl const&) {};
+    //static instance pointer
+    static Adxl* _pInstance;
+    
     int* xyz;
 
 };
