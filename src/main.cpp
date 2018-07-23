@@ -7,6 +7,7 @@
  */
 
 #include <Arduino.h>
+#include <TimerOne.h>
 
 //AVR library imports
 #include <avr/sleep.h>
@@ -16,8 +17,13 @@
 
 
 //global variable that all the ISRs will flag for their respective event to run
-volatile uint32_t globalEventFlags = 0;
-uint8_t globalTaskFlags [NUM_DEVICES] = { 0 };
+volatile uint16_t globalEventFlags = 0;
+uint8_t globalTaskFlags [DEVICE_NUM] = { 0 };
+
+//BLE global transfer variables
+//possible to do this with ACI as well
+uint8_t* globalBleBuffer;
+uint8_t globalBleBufferLength;
 
 
 //Start of ISR declarations
@@ -31,6 +37,21 @@ void adxlISR() {
     globalEventFlags        |= EF_ADXL;
 }
 
+//BLE ACI change handler (ignore the aci event, we'll grab that later)
+void BleAciISR(aci_evt_opcode_t) {
+    globalEventFlags                |= EF_BLE;
+    globalTaskFlags[DEVICE_BLE]     |= TF_BLE_ACI;
+}
+
+//BLE RX handler
+void BleRxISR(uint8_t *buffer, uint8_t len) {
+    globalEventFlags                |= EF_BLE;
+    globalTaskFlags[DEVICE_BLE]     |= TF_BLE_RX;
+
+    //storing data
+    globalBleBuffer = buffer;
+    globalBleBufferLength = len;
+}
 
 int main(void)
 {
@@ -43,9 +64,9 @@ int main(void)
     #endif
 
     Serial.begin(9600);
-    while (!Serial) {
-        ; // wait for serial port to connect
-    }
+    // while (!Serial) {
+    //     ; // wait for serial port to connect
+    // }
 
     delay(500);
 
@@ -57,24 +78,31 @@ int main(void)
     power_spi_enable();
     power_twi_enable();
     power_timer0_enable();
+    power_timer1_enable();
     #ifdef DEBUG
         power_usb_enable();
     #endif
 
     //controller initialization
-    I2cController* i2cC          = I2cController::getInstance();             //start the I2C first
-    EepromController* eepromC    = EepromController::getInstance();
-    RtcController* rtcC          = RtcController::getInstance();
-    AdxlController* adxlC        = AdxlController::getInstance();
-    OledController* oledC        = OledController::getInstance();
-    BleController* bleC          = BleController::getInstance();
+    I2c* i2c          = I2c::getInstance();             //start the I2 first
+    Eeprom* eeprom    = Eeprom::getInstance();
+    Rtc* rtc          = Rtc::getInstance();
+    Adxl* adxl        = Adxl::getInstance();
+    Oled* oled        = Oled::getInstance();
+    Bluetooth* ble    = Bluetooth::getInstance();
 
-    i2cC->init();       //initialize I2C first
-    eepromC->init();
-    rtcC->init();
-    adxlC->init();
-    oledC->init();
-    bleC->init();
+    i2c->init();       //initialize I2 first
+    eeprom->init();
+    rtc->init();
+    adxl->init();
+    oled->init();
+    ble->init();
+
+    //setup BLE
+    ble->bluetooth->setRXcallback(BleRxISR);
+    ble->bluetooth->setACIcallback(BleAciISR); //grabbing the reference of the function
+    ble->bluetooth->setDeviceName("LIT BIT"); /* 7 characters max! */
+    ble->bluetooth->begin();
 
 
     /*
@@ -86,7 +114,11 @@ int main(void)
                                             |___/                                   |_|
     */
     //Adxl interrupt
-    attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
+    // attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
+
+    //start timer
+    Timer1.initialize(1000);    //in usec
+    Timer1.attachInterrupt(timerISR);
 
     //set the desired sleep mode
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
@@ -108,7 +140,7 @@ int main(void)
     uint8_t timerEventFlags = 0;
 
     //initialize task flag array to zero
-    uint8_t localTaskFlags[NUM_DEVICES] = { 0 };
+    uint8_t localTaskFlags[DEVICE_NUM] = { 0 };
 
     //---------------------------------------------------------------
     // Begin main program Super Loop
@@ -120,15 +152,32 @@ int main(void)
         localEventFlags |= globalEventFlags;
         globalEventFlags = 0;
 
+        // Tell the nRF8001 to do whatever it should be working on.
+        // AKA update the bluetooth ACI state
+        ble->bluetooth->pollACI();
+
+        //check if we have new data in the BLE buffer
+        if((globalEventFlags & EF_BLE) && (globalTaskFlags[DEVICE_BLE] & TF_BLE_RX))
+        {
+            ble->localBleBuffer = globalBleBuffer;
+            ble->localBleBufferLength = globalBleBufferLength;
+        }
+
+        //clearing global task flags for every device
+        for(int i = 0; i < Device::DEVICE_NUM; i++ )
+        {
+            localTaskFlags[i] |= globalTaskFlags[i];
+            globalTaskFlags[i] = 0;
+        }
+
         interrupts();
 
-        
         //transfering timer event flags to local EF
         localEventFlags |= timerEventFlags << 8;
 
 
         //processing stage returns the next stage
-        localStage.currentStage = localStage.processStage(&localEventFlags, localTaskFlags);
+        localStage.processStage(&localEventFlags, localTaskFlags);
 
         //checking if we need to update the timers
         if(localEventFlags & EF_TIMER)
