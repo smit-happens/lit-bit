@@ -147,13 +147,16 @@ void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
     // int magnitude = adxl->getMagnitude();
     // int z = adxl->getZ();
 
-    // Serial.println(magnitude);
-    
-    // adxl->printValues();
+    Serial.println("adxl processing function");
 
-    //need to activate the event & task flag of ble to have it trigger
-    *eventFlags |= EF_BLE; 
-    taskFlags[DEVICE_BLE] |= TF_BLE_TX;
+    if(ble->bluetooth->getState() == ACI_EVT_CONNECTED)
+    {
+        Serial.println("adxl processing function");
+
+        //need to activate the event & task flag of ble to have it trigger
+        *eventFlags |= EF_BLE; 
+        taskFlags[DEVICE_BLE] |= TF_BLE_TX;
+    }
 }
 
 
@@ -176,6 +179,8 @@ void StageManager::processRtc(uint8_t* taskFlags)
  */
 void StageManager::processBle(uint8_t* taskFlags)
 {
+    Serial.println("BLE function");
+
     //local bluetooth lib reference
     Adafruit_BLE_UART* BleLib = ble->bluetooth;
     //local oled reference
@@ -256,6 +261,9 @@ void StageManager::processBle(uint8_t* taskFlags)
     //perform if we need to transmit data over BLE
     if(taskFlags[DEVICE_BLE] & TF_BLE_TX)
     {
+        Serial.print("ACI STATUS: ");
+        Serial.println(BleLib->getState() == ACI_EVT_CONNECTED);
+
         //check if we're connected to a BLE device
         if(BleLib->getState() == ACI_EVT_CONNECTED)
         {
@@ -292,5 +300,5 @@ void StageManager::processOled(uint8_t* taskFlags)
 {
     //glcd view display updating
     // GlcdController::getInstance()->poll(); //will flush buffer if required.
-    return;
+    // Serial.println("oled function");
 }

@@ -80,24 +80,4 @@ const uint8_t LB_BLE_ACT          = 11;
 const uint8_t LB_BLE_RST          = 12;
 
 
-/*
-   ___  _     _____ ____
-  / _ \| |   | ____|  _ \
- | | | | |   |  _| | | | |
- | |_| | |___| |___| |_| |
-  \___/|_____|_____|____/
-*/
-//Data lines
-// SID:     Serial data out
-// SCLK:    Serial clock out
-// RS/A0:   Data/Command select
-// _RST:    LCD reset
-// _CS:     LCD chip select
-// const uint8_t LB_OLED_SID          = 8;   //ST7565 display Output
-// const uint8_t LB_OLED_SCLK         = 9;   //ST7565 display Output
-// const uint8_t LB_OLED_A0           = 10;  //ST7565 display Output
-// const uint8_t LB_OLED_RST          = 11;  //ST7565 display Output
-// const uint8_t LB_OLED_CS           = 12;  //ST7565 display Output
-
-
 #endif  //PORTCONSTANTS_HPP
