@@ -44,7 +44,7 @@ private:
     Rtc* rtc          = Rtc::getInstance();
     Adxl* adxl        = Adxl::getInstance();
     Oled* oled        = Oled::getInstance();
-    Bluetooth* ble    = Bluetooth::getInstance();
+    // Bluetooth* ble    = Bluetooth::getInstance();
 
 
     //Processing functions for the various devices

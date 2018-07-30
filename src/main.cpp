@@ -10,7 +10,7 @@
 #include <TimerOne.h>
 
 //AVR library imports
-#include <avr/sleep.h>
+// #include <avr/sleep.h>
 #include <avr/power.h>      //reference: https://www.nongnu.org/avr-libc/user-manual/group__avr__power.html
 
 #include "StageManager/StageManager.hpp"
@@ -38,20 +38,20 @@ void adxlISR() {
 }
 
 //BLE ACI change handler (ignore the aci event, we'll grab that later)
-void BleAciISR(aci_evt_opcode_t) {
-    globalEventFlags                |= EF_BLE;
-    globalTaskFlags[DEVICE_BLE]     |= TF_BLE_ACI;
-}
+// void BleAciISR(aci_evt_opcode_t) {
+//     globalEventFlags                |= EF_BLE;
+//     globalTaskFlags[DEVICE_BLE]     |= TF_BLE_ACI;
+// }
 
 //BLE RX handler
-void BleRxISR(uint8_t *buffer, uint8_t len) {
-    globalEventFlags                |= EF_BLE;
-    globalTaskFlags[DEVICE_BLE]     |= TF_BLE_RX;
+// void BleRxISR(uint8_t *buffer, uint8_t len) {
+//     globalEventFlags                |= EF_BLE;
+//     globalTaskFlags[DEVICE_BLE]     |= TF_BLE_RX;
 
-    //storing data
-    globalBleBuffer = buffer;
-    globalBleBufferLength = len;
-}
+//     //storing data
+//     globalBleBuffer = buffer;
+//     globalBleBufferLength = len;
+// }
 
 int main(void)
 {
@@ -64,15 +64,15 @@ int main(void)
     #endif
 
     Serial.begin(9600);
-    while (!Serial) {
-        ; // wait for serial port to connect
-    }
+    // while (!Serial) {
+    //     ; // wait for serial port to connect
+    // }
 
     delay(500);
 
     //status LED
-    pinMode(LED_BUILTIN, OUTPUT);
-    digitalWrite(LED_BUILTIN, HIGH);
+    // pinMode(LED_BUILTIN, OUTPUT);
+    // digitalWrite(LED_BUILTIN, HIGH);
 
     power_all_disable();
     power_spi_enable();
@@ -89,20 +89,20 @@ int main(void)
     Rtc* rtc          = Rtc::getInstance();
     Adxl* adxl        = Adxl::getInstance();
     Oled* oled        = Oled::getInstance();
-    Bluetooth* ble    = Bluetooth::getInstance();
+    // Bluetooth* ble    = Bluetooth::getInstance();
 
     i2c->init();       //initialize I2 first
     eeprom->init();
     rtc->init();
     adxl->init();
     oled->init();
-    ble->init();
+    // ble->init();
 
     //setup BLE
-    ble->bluetooth->setRXcallback(BleRxISR);
-    ble->bluetooth->setACIcallback(BleAciISR); //grabbing the reference of the function
-    ble->bluetooth->setDeviceName("LIT BIT"); /* 7 characters max! */
-    ble->bluetooth->begin();
+    // ble->bluetooth->setRXcallback(BleRxISR);
+    // ble->bluetooth->setACIcallback(BleAciISR); //grabbing the reference of the function
+    // ble->bluetooth->setDeviceName("LIT-BIT"); /* 7 characters max! */
+    // ble->bluetooth->begin();
 
 
     /*
@@ -154,14 +154,14 @@ int main(void)
 
         // Tell the nRF8001 to do whatever it should be working on.
         // AKA update the bluetooth ACI state
-        ble->bluetooth->pollACI();
+        // ble->bluetooth->pollACI();
 
         //check if we have new data in the BLE buffer
-        if((globalEventFlags & EF_BLE) && (globalTaskFlags[DEVICE_BLE] & TF_BLE_RX))
-        {
-            ble->localBleBuffer = globalBleBuffer;
-            ble->localBleBufferLength = globalBleBufferLength;
-        }
+        // if((globalEventFlags & EF_BLE) && (globalTaskFlags[DEVICE_BLE] & TF_BLE_RX))
+        // {
+        //     ble->localBleBuffer = globalBleBuffer;
+        //     ble->localBleBufferLength = globalBleBufferLength;
+        // }
 
         //clearing global task flags for every device
         for(int i = 0; i < Device::DEVICE_NUM; i++ )
