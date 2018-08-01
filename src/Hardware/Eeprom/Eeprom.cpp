@@ -103,7 +103,7 @@ int Eeprom::readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* 
     int rangeAmount = endAddress - startAddress +1;
 
     //don't progress if there's a range of zero or lower
-    if(rangeAmount < 1)
+    if(rangeAmount <= 0)
     {
         //out of range error
         error = -1;
@@ -139,19 +139,51 @@ int Eeprom::readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* 
 }
 
 
+int Eeprom::writeSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* writeData)
+{
+    //0 is success
+    int error = 0;
+    int rangeAmount = endAddress - startAddress +1;
+
+    //don't progress if there's a range of zero or lower or more than a page (128 bytes)
+    if(rangeAmount <= 0 || rangeAmount > 128)
+    {
+        //out of range error
+        error = -1;
+    }
+    else
+    {
+        //start comms with EEPROM
+        Wire.beginTransmission(EEPROM24_ADDR);
+
+        //EEPROM address to write to
+        Wire.write( (uint8_t) startAddress >> 8 );
+        Wire.write( (uint8_t) (startAddress & 0x00FF) );
+    }
+
+    //send data to the page buffer in the Eeprom
+    for(int i = 0; i < rangeAmount; i++)
+    {
+        Wire.write(writeData[i]);
+    }
+
+    error = Wire.endTransmission();
+
+    delay(5);       //need to wait for the EEPROM chip to finish writing
+
+    return error;
+}
+
+
 void Eeprom::test(void)
 {
     uint8_t array[5], buffer[5];
     for(int i = 0; i < 5; i++)
     {
         array[i] = random();
-        writeByte(i, array[i]);
-
-        Serial.print("data at ");
-        Serial.print(i);
-        Serial.print(": ");
-        Serial.println(readByte(i));
     }
+
+    writeSequential(0, 4, array);
 
     readSequential(0, 4, buffer);
 

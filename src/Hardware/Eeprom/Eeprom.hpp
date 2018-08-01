@@ -28,12 +28,8 @@ public:
     int readByte(uint16_t readAddress);
     int writeByte(uint16_t writeAddress, uint8_t writeData);
 
-    int readPage();
-    int writePage();
-
-    int readCurrent();
     int readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* data);
-    int readRandom(uint16_t readAddress);    
+    int writeSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* writeData);
 
     void test();
 
