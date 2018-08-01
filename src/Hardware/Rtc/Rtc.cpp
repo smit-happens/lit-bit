@@ -56,12 +56,3 @@ void Rtc::init(void)
     // Serial.println(mcp7940Lib->now().day());
     // Serial.println(mcp7940Lib->now().year());  
 }
-
-
-/** 
- * @brief  Rtc destructor
- */
-Rtc::~Rtc(void)
-{
-
-}

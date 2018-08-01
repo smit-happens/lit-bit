@@ -41,7 +41,7 @@ void Oled::init(void)
     display->begin();       // Initialize the OLED
     display->clear(ALL);    // Clear the display's internal memory
     display->display();     // Display what's in the buffer (splashscreen)
-    delay(1000);            // Delay 1000 ms
+    delay(500);             // Delay
     display->clear(PAGE);   // Clear the buffer.
-    sleep();
+    // sleep();                // Put display to sleep until needed
 }

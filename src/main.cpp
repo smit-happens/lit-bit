@@ -10,7 +10,7 @@
 #include <TimerOne.h>
 
 //AVR library imports
-// #include <avr/sleep.h>
+#include <avr/sleep.h>
 #include <avr/power.h>      //reference: https://www.nongnu.org/avr-libc/user-manual/group__avr__power.html
 
 #include "StageManager/StageManager.hpp"
@@ -44,12 +44,13 @@ int main(void)
     #endif
 
     Serial.begin(9600);
-    while (!Serial) {
-        ; // wait for serial port to connect
-    }
+    // while (!Serial) {
+    //     ; // wait for serial port to connect
+    // }
 
-    delay(500);
+    // delay(500);
 
+    //disabling everything that I don't need
     power_all_disable();
     power_twi_enable();
     power_timer0_enable();
@@ -58,16 +59,19 @@ int main(void)
         power_usb_enable();
     #endif
 
+    //setting the clock to full (b/c reasons)
+    clock_prescale_set(clock_div_1);
+
     //controller initialization
     I2c* i2c          = I2c::getInstance();             //start the I2 first
     Eeprom* eeprom    = Eeprom::getInstance();
-    // Rtc* rtc          = Rtc::getInstance();
+    Rtc* rtc          = Rtc::getInstance();
     // Adxl* adxl        = Adxl::getInstance();
     Oled* oled        = Oled::getInstance();
 
     i2c->init();       //initialize I2 first
     eeprom->init();
-    // rtc->init();
+    rtc->init();
     // adxl->init();
     oled->init();
 
@@ -111,12 +115,11 @@ int main(void)
 
     while(true)
     {
-        delay(500);        
+        delay(100);
 
-        Serial.println("screen off");
-        oled->sleep();
-
-        // eeprom->test();
+        oled->display->setCursor(0, 0);
+        oled->display->print(rtc->mcp7940Lib->now().unixtime());
+        oled->display->display();
 
         // adxl->storeAccelXYZ();
 

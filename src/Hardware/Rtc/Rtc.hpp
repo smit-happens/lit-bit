@@ -18,7 +18,7 @@ class Rtc
 public:
     MCP7940_Class* mcp7940Lib;
 
-    ~Rtc(void);
+    ~Rtc(void) {};
     static Rtc*   getInstance();
     void init(void);
 
@@ -28,6 +28,8 @@ public:
      * getDate()
      * getTime()
      * getDateTime()
+     * rtc->mcp7940Lib->now().unixtime();
+     * 
      */
 
     //TODO: make alarm handling functions for the RTC
