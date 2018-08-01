@@ -50,14 +50,14 @@ int main(void)
 
     delay(500);
 
-    // power_all_disable();
+    power_all_disable();
     // power_spi_enable();
-    // power_twi_enable();
-    // power_timer0_enable();
-    // power_timer1_enable();
-    // #ifdef DEBUG
-    //     power_usb_enable();
-    // #endif
+    power_twi_enable();
+    power_timer0_enable();
+    power_timer1_enable();
+    #ifdef DEBUG
+        power_usb_enable();
+    #endif
 
     //controller initialization
     I2c* i2c          = I2c::getInstance();             //start the I2 first

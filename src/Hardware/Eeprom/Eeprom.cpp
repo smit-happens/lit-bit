@@ -81,7 +81,7 @@ int Eeprom::readByte(uint16_t readAddress)
     // check status (0 is success)
     if( Wire.endTransmission() == 0 ) 
     {
-        //request reading from the address for the MSB
+        //request reading from the address for the data we want
         Wire.requestFrom(EEPROM24_ADDR, 1);
 
         while( Wire.available() )
@@ -99,12 +99,14 @@ int Eeprom::readByte(uint16_t readAddress)
 int Eeprom::readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* data)
 {
     //0 is success
-    int result = 0;
+    int error = 0;
+    int rangeAmount = endAddress - startAddress +1;
 
-    if(endAddress - startAddress < 0)
+    //don't progress if there's a range of zero or lower
+    if(rangeAmount < 1)
     {
         //out of range error
-        result = -1;
+        error = -1;
     }
     else
     {
@@ -116,10 +118,24 @@ int Eeprom::readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* 
         Wire.write( (uint8_t) (startAddress & 0x00FF) );
     }
 
-    //TODO: return the data in the address ranges
-    //FIXME: do this
+    // check status (0 is success)
+    if( Wire.endTransmission() == 0 ) 
+    {
+        //request reading from the addresses in our range
+        Wire.requestFrom(EEPROM24_ADDR, rangeAmount);
 
-    return result;
+        for(int i = 0; i < rangeAmount; i++)
+        {
+            //read byte
+            data[i] = Wire.read();
+        }
+    }
+    else 
+    {  
+        error = -1;
+    }
+
+    return error;
 }
 
 
@@ -130,9 +146,12 @@ void Eeprom::test(void)
     {
         array[i] = random();
         writeByte(i, array[i]);
-    }
 
-    // Serial.println(readByte());
+        Serial.print("data at ");
+        Serial.print(i);
+        Serial.print(": ");
+        Serial.println(readByte(i));
+    }
 
     readSequential(0, 4, buffer);
 
