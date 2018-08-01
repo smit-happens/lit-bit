@@ -20,11 +20,6 @@
 volatile uint16_t globalEventFlags = 0;
 uint8_t globalTaskFlags [DEVICE_NUM] = { 0 };
 
-//BLE global transfer variables
-//possible to do this with ACI as well
-uint8_t* globalBleBuffer;
-uint8_t globalBleBufferLength;
-
 
 //Start of ISR declarations
 void timerISR() {
@@ -37,21 +32,6 @@ void adxlISR() {
     globalEventFlags        |= EF_ADXL;
 }
 
-//BLE ACI change handler (ignore the aci event, we'll grab that later)
-// void BleAciISR(aci_evt_opcode_t) {
-//     globalEventFlags                |= EF_BLE;
-//     globalTaskFlags[DEVICE_BLE]     |= TF_BLE_ACI;
-// }
-
-//BLE RX handler
-// void BleRxISR(uint8_t *buffer, uint8_t len) {
-//     globalEventFlags                |= EF_BLE;
-//     globalTaskFlags[DEVICE_BLE]     |= TF_BLE_RX;
-
-//     //storing data
-//     globalBleBuffer = buffer;
-//     globalBleBufferLength = len;
-// }
 
 int main(void)
 {
@@ -70,10 +50,6 @@ int main(void)
 
     delay(500);
 
-    //status LED
-    // pinMode(LED_BUILTIN, OUTPUT);
-    // digitalWrite(LED_BUILTIN, HIGH);
-
     power_all_disable();
     power_spi_enable();
     power_twi_enable();
@@ -89,20 +65,12 @@ int main(void)
     Rtc* rtc          = Rtc::getInstance();
     Adxl* adxl        = Adxl::getInstance();
     Oled* oled        = Oled::getInstance();
-    // Bluetooth* ble    = Bluetooth::getInstance();
 
     i2c->init();       //initialize I2 first
     eeprom->init();
     rtc->init();
     adxl->init();
     oled->init();
-    // ble->init();
-
-    //setup BLE
-    // ble->bluetooth->setRXcallback(BleRxISR);
-    // ble->bluetooth->setACIcallback(BleAciISR); //grabbing the reference of the function
-    // ble->bluetooth->setDeviceName("LIT-BIT"); /* 7 characters max! */
-    // ble->bluetooth->begin();
 
 
     /*
@@ -151,17 +119,6 @@ int main(void)
         //Volatile operation for transferring flags from ISRs to local main
         localEventFlags |= globalEventFlags;
         globalEventFlags = 0;
-
-        // Tell the nRF8001 to do whatever it should be working on.
-        // AKA update the bluetooth ACI state
-        // ble->bluetooth->pollACI();
-
-        //check if we have new data in the BLE buffer
-        // if((globalEventFlags & EF_BLE) && (globalTaskFlags[DEVICE_BLE] & TF_BLE_RX))
-        // {
-        //     ble->localBleBuffer = globalBleBuffer;
-        //     ble->localBleBufferLength = globalBleBufferLength;
-        // }
 
         //clearing global task flags for every device
         for(int i = 0; i < Device::DEVICE_NUM; i++ )

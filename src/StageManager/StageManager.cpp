@@ -110,14 +110,6 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
         *eventFlags &= ~TIMER_F_ADXL;
     }
 
-    if(*eventFlags & EF_BLE)
-    {
-        // processBle(taskFlags);
-        
-        //clearing the BLE EF
-        *eventFlags &= ~EF_BLE;
-    }
-
     if(*eventFlags & TIMER_F_EEPROM)
     {
         processEeprom(taskFlags);
@@ -149,14 +141,6 @@ void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
 
     Serial.println("adxl processing function");
 
-    // if(ble->bluetooth->getState() == ACI_EVT_CONNECTED)
-    // {
-    //     Serial.println("adxl processing function");
-
-    //     //need to activate the event & task flag of ble to have it trigger
-    //     *eventFlags |= EF_BLE; 
-    //     taskFlags[DEVICE_BLE] |= TF_BLE_TX;
-    // }
 }
 
 
@@ -168,113 +152,6 @@ void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
 void StageManager::processRtc(uint8_t* taskFlags)
 {
 
-
-}
-
-
-/** 
- * @brief  
- * @note   
- * @retval 
- */
-void StageManager::processBle(uint8_t* taskFlags)
-{
-    // Serial.println("BLE function");
-
-    // //local bluetooth lib reference
-    // Adafruit_BLE_UART* BleLib = ble->bluetooth;
-    // //local oled reference
-    // MicroOLED* oledLib = oled->display;
-
-    // if(taskFlags[DEVICE_BLE] & TF_BLE_ACI)
-    // {
-    //     aci_evt_opcode_t status = BleLib->getState();
-
-    //     switch(status)
-    //     {
-    //         case ACI_EVT_DEVICE_STARTED:
-    //             Serial.println(F("Advertising started"));
-    //         break;
-
-    //         case ACI_EVT_CONNECTED:
-    //             Serial.println(F("Connected!"));
-    //         break;
-
-    //         case ACI_EVT_DISCONNECTED:
-    //             Serial.println(F("Disconnected or advertising timed out"));
-    //         break;
-
-    //         case ACI_EVT_DATA_RECEIVED:
-    //             //TODO: see if this ever triggers
-    //         break;
-
-    //         default:
-    //         break;
-    //     }
-    //     //reset the taskflag
-    //     taskFlags[DEVICE_BLE] &= ~TF_BLE_ACI;
-    // }
-
-    // //perform if we receive any data over BLE
-    // if(taskFlags[DEVICE_BLE] & TF_BLE_RX)
-    // {
-    //     oledLib->clear(PAGE);
-    //     oledLib->setCursor(0,0);
-
-    //     // //reading in one char at a time
-    //     while (BleLib->available()) {
-    //         char c = BleLib->read();
-    //         Serial.print(c);
-            
-    //         oledLib->write(c);
-    //     }
-    //     Serial.println();
-        
-
-    //     // char* seqToSearchFor = "LB";
-    //     // char* output = NULL;
-    //     // output = strstr((char*)ble->localBleBuffer, seqToSearchFor);
-
-    //     // if(output)
-    //     //     oledLib->println("cmd recieved!");
-    //     // else
-    //     // {
-    //     //     // for(int i =0; i < ble->localBleBufferLength; i++)
-    //     //     //     oledLib->write(ble->localBleBuffer[i]);
-    //     //         while (BleLib->available()) {
-    //     //             char c = BleLib->read();
-    //     //             Serial.print(c);
-                    
-    //     //             oledLib->write(c);
-    //     //         }
-
-    //     // }
-
-
-    //     //update display
-    //     oledLib->display();
-
-    //     //reset the taskflag
-    //     taskFlags[DEVICE_BLE] &= ~TF_BLE_RX;
-    // }
-
-    // //perform if we need to transmit data over BLE
-    // if(taskFlags[DEVICE_BLE] & TF_BLE_TX)
-    // {
-    //     Serial.print("ACI STATUS: ");
-    //     Serial.println(BleLib->getState() == ACI_EVT_CONNECTED);
-
-    //     //check if we're connected to a BLE device
-    //     if(BleLib->getState() == ACI_EVT_CONNECTED)
-    //     {
-    //         char c[10];
-    //         itoa(adxl->getZ(), c, 10);
-    //         BleLib->println(c);
-    //     }
-        
-    //     //reset the taskflag
-    //     taskFlags[DEVICE_BLE] &= ~TF_BLE_TX; 
-    // }
 
 }
 
