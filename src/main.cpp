@@ -44,33 +44,33 @@ int main(void)
     #endif
 
     Serial.begin(9600);
-    // while (!Serial) {
-    //     ; // wait for serial port to connect
-    // }
+    while (!Serial) {
+        ; // wait for serial port to connect
+    }
 
     delay(500);
 
-    power_all_disable();
-    power_spi_enable();
-    power_twi_enable();
-    power_timer0_enable();
-    power_timer1_enable();
-    #ifdef DEBUG
-        power_usb_enable();
-    #endif
+    // power_all_disable();
+    // power_spi_enable();
+    // power_twi_enable();
+    // power_timer0_enable();
+    // power_timer1_enable();
+    // #ifdef DEBUG
+    //     power_usb_enable();
+    // #endif
 
     //controller initialization
     I2c* i2c          = I2c::getInstance();             //start the I2 first
     Eeprom* eeprom    = Eeprom::getInstance();
-    Rtc* rtc          = Rtc::getInstance();
-    Adxl* adxl        = Adxl::getInstance();
-    Oled* oled        = Oled::getInstance();
+    // Rtc* rtc          = Rtc::getInstance();
+    // Adxl* adxl        = Adxl::getInstance();
+    // Oled* oled        = Oled::getInstance();
 
     i2c->init();       //initialize I2 first
     eeprom->init();
-    rtc->init();
-    adxl->init();
-    oled->init();
+    // rtc->init();
+    // adxl->init();
+    // oled->init();
 
 
     /*
@@ -85,8 +85,8 @@ int main(void)
     // attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
 
     //start timer
-    Timer1.initialize(1000);    //in usec
-    Timer1.attachInterrupt(timerISR);
+    // Timer1.initialize(1000);    //in usec
+    // Timer1.attachInterrupt(timerISR);
 
     //set the desired sleep mode
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
@@ -100,53 +100,72 @@ int main(void)
     // clock_prescale_set(clock_div_2);
 
 
-    //local instance of the Stage manager class
-    StageManager localStage = StageManager();
+    // //local instance of the Stage manager class
+    // StageManager localStage = StageManager();
 
-    //initialize the local and timer event flag variables
-    uint16_t localEventFlags = 0;
-    uint8_t timerEventFlags = 0;
+    // //initialize the local and timer event flag variables
+    // uint16_t localEventFlags = 0;
+    // uint8_t timerEventFlags = 0;
 
-    //initialize task flag array to zero
-    uint8_t localTaskFlags[DEVICE_NUM] = { 0 };
+    // //initialize task flag array to zero
+    // uint8_t localTaskFlags[DEVICE_NUM] = { 0 };
 
-    //---------------------------------------------------------------
-    // Begin main program Super Loop
     while(true)
     {
-        noInterrupts();
+        // oled->display->println("testing");
+
+        eeprom->test();
+
+        // adxl->storeAccelXYZ();
+
+        // int x = adxl->getX();
+        // int y = adxl->getY();
+        // int z = adxl->getZ();
+
+        // Serial.println(x);
+        // Serial.println(y);
+        // Serial.println(z);
+
+        delay(500);
+    }
+
+    // //---------------------------------------------------------------
+    // // Begin main program Super Loop
+    // while(true)
+    // {
+    //     noInterrupts();
         
-        //Volatile operation for transferring flags from ISRs to local main
-        localEventFlags |= globalEventFlags;
-        globalEventFlags = 0;
+    //     //Volatile operation for transferring flags from ISRs to local main
+    //     localEventFlags |= globalEventFlags;
+    //     globalEventFlags = 0;
 
-        //clearing global task flags for every device
-        for(int i = 0; i < Device::DEVICE_NUM; i++ )
-        {
-            localTaskFlags[i] |= globalTaskFlags[i];
-            globalTaskFlags[i] = 0;
-        }
+    //     //clearing global task flags for every device
+    //     for(int i = 0; i < Device::DEVICE_NUM; i++ )
+    //     {
+    //         localTaskFlags[i] |= globalTaskFlags[i];
+    //         globalTaskFlags[i] = 0;
+    //     }
 
-        interrupts();
+    //     interrupts();
 
-        //transfering timer event flags to local EF
-        localEventFlags |= timerEventFlags << 8;
+    //     //transfering timer event flags to local EF
+    //     localEventFlags |= timerEventFlags << 8;
 
 
-        //processing stage returns the next stage
-        localStage.processStage(&localEventFlags, localTaskFlags);
+    //     //processing stage returns the next stage
+    //     localStage.processStage(&localEventFlags, localTaskFlags);
 
-        //checking if we need to update the timers
-        if(localEventFlags & EF_TIMER)
-        {
-            //bit shifting the timer Task Flags (TFs) to the upper half of the localEF var
-            timerEventFlags |= localStage.processTimers();
+    //     //checking if we need to update the timers
+    //     if(localEventFlags & EF_TIMER)
+    //     {
+    //         //bit shifting the timer Task Flags (TFs) to the upper half of the localEF var
+    //         timerEventFlags |= localStage.processTimers();
             
-            //clearing the EF so we don't trigger this again
-            localEventFlags &= ~EF_TIMER;
-        }
+    //         //clearing the EF so we don't trigger this again
+    //         localEventFlags &= ~EF_TIMER;
+    //     }
 
-    } //end while()
+    // } //end while()
 
     return 0;
 }

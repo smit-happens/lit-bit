@@ -66,18 +66,4 @@ const uint8_t LB_ADXL_INT1        = 1;
 const uint8_t LB_RTC_MFP          = 0;
 
 
-/*
-  ____  _     _____
- | __ )| |   | ____|
- |  _ \| |   |  _|
- | |_) | |___| |___
- |____/|_____|_____|
-
-*/
-const uint8_t LB_BLE_RDY          = 7;
-const uint8_t LB_BLE_REQ          = 9;
-const uint8_t LB_BLE_ACT          = 11;
-const uint8_t LB_BLE_RST          = 12;
-
-
 #endif  //PORTCONSTANTS_HPP

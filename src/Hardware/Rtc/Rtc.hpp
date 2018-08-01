@@ -16,6 +16,8 @@
 class Rtc
 {
 public:
+    MCP7940_Class* mcp7940Lib;
+
     ~Rtc(void);
     static Rtc*   getInstance();
     void init(void);
@@ -36,10 +38,7 @@ private:
     //copy constructor is private
     Rtc(Rtc const&) {};
     //static instance pointer
-    static Rtc* _pInstance;
-
-    MCP7940_Class* mcp7940Lib;
-    
+    static Rtc* _pInstance;    
 };
 
 

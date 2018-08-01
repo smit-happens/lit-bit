@@ -115,7 +115,10 @@ int Eeprom::readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* 
         Wire.write( (uint8_t) startAddress >> 8 );
         Wire.write( (uint8_t) (startAddress & 0x00FF) );
     }
-    
+
+    //TODO: return the data in the address ranges
+    //FIXME: do this
+
     return result;
 }
 
@@ -126,15 +129,20 @@ void Eeprom::test(void)
     for(int i = 0; i < 5; i++)
     {
         array[i] = random();
-        writeByte(array[i], 5);
+        writeByte(i, array[i]);
     }
+
+    // Serial.println(readByte());
 
     readSequential(0, 4, buffer);
 
     bool testPass = true;
     for(int i = 0; i < 5; i++)
     {
-        if(buffer[i]!=array[i])
+        Serial.println(array[i]);
+        Serial.println(buffer[i]);
+        
+        if(buffer[i] != array[i])
         {
             testPass=false;
         }
