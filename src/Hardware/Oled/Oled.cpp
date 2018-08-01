@@ -43,13 +43,5 @@ void Oled::init(void)
     display->display();     // Display what's in the buffer (splashscreen)
     delay(1000);            // Delay 1000 ms
     display->clear(PAGE);   // Clear the buffer.
-}
-
-
-/** 
- * @brief  Oled destructor
- */
-Oled::~Oled(void)
-{
-    // delete display;      //deleting object of polymorphic class type warning
+    sleep();
 }

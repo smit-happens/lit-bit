@@ -51,7 +51,6 @@ int main(void)
     delay(500);
 
     power_all_disable();
-    // power_spi_enable();
     power_twi_enable();
     power_timer0_enable();
     power_timer1_enable();
@@ -64,13 +63,13 @@ int main(void)
     Eeprom* eeprom    = Eeprom::getInstance();
     // Rtc* rtc          = Rtc::getInstance();
     // Adxl* adxl        = Adxl::getInstance();
-    // Oled* oled        = Oled::getInstance();
+    Oled* oled        = Oled::getInstance();
 
     i2c->init();       //initialize I2 first
     eeprom->init();
     // rtc->init();
     // adxl->init();
-    // oled->init();
+    oled->init();
 
 
     /*
@@ -112,9 +111,12 @@ int main(void)
 
     while(true)
     {
-        // oled->display->println("testing");
+        delay(500);        
 
-        eeprom->test();
+        Serial.println("screen off");
+        oled->sleep();
+
+        // eeprom->test();
 
         // adxl->storeAccelXYZ();
 
@@ -125,8 +127,6 @@ int main(void)
         // Serial.println(x);
         // Serial.println(y);
         // Serial.println(z);
-
-        delay(500);
     }
 
     // //---------------------------------------------------------------
