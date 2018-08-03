@@ -45,7 +45,7 @@ void Adxl::init(void)
     delay(5);
 
     //set range to +- 4G
-    // adxlLib->setRangeSetting(4);
+    adxlLib->setRangeSetting(4);
 
     delay(5);
 
@@ -58,6 +58,11 @@ void Adxl::init(void)
     // adxlLib->enableFIFOMode();
 
     //place adxl into measurement
+
+    //transfer some interrupts to the other pin (ignore them)
+    adxlLib->setInterruptMapping(ADXL345_INT_WATERMARK_BIT, ADXL345_INT2_PIN);
+    adxlLib->setInterruptMapping(ADXL345_INT_OVERRUNY_BIT, ADXL345_INT2_PIN);
+    // adxlLib->set
 }
 
 

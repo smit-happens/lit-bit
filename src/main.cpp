@@ -82,99 +82,76 @@ int main(void)
       \__,_|\__|\__\__,_|\___|_| |_|_|_| |_|\__, |  |_|_| |_|\__\___|_|  |_|   \__,_| .__/ \__|___/
                                             |___/                                   |_|
     */
-    //Adxl interrupt
+    // Adxl interrupt
     // attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
 
-    //start timer
-    // Timer1.initialize(1000);    //in usec
-    // Timer1.attachInterrupt(timerISR);
+    // start timer
+    Timer1.initialize(1000);    //in usec
+    Timer1.attachInterrupt(timerISR);
 
-    //set the desired sleep mode
+    //check rate of the adxl
+    // Serial.println(adxl->adxlLib->getRate());
+    Serial.println(adxl->adxlLib->get_bw_code());
+
+    // // set the desired sleep mode
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);
 
-    //enable sleep mode by setting the sleep bit
+    // // enable sleep mode by setting the sleep bit
     // sleep_enable();
 
-    //execute the sleep instruction and actually go to sleep
+    // // execute the sleep instruction and actually go to sleep
     // sleep_cpu();
 
     // clock_prescale_set(clock_div_2);
 
 
-    delay(500);
-    
-    // adxl->adxlLib->printAllRegister();
-    // Serial.println(adxl->adxlLib->error_code);
+    //local instance of the Stage manager class
+    StageManager localStage = StageManager();
 
+    //initialize the local and timer event flag variables
+    uint16_t localEventFlags = 0;
+    uint8_t timerEventFlags = 0;
 
-    // //local instance of the Stage manager class
-    // StageManager localStage = StageManager();
+    //initialize task flag array to zero
+    uint8_t localTaskFlags[DEVICE_NUM] = { 0 };
 
-    // //initialize the local and timer event flag variables
-    // uint16_t localEventFlags = 0;
-    // uint8_t timerEventFlags = 0;
-
-    // //initialize task flag array to zero
-    // uint8_t localTaskFlags[DEVICE_NUM] = { 0 };
-
+    //---------------------------------------------------------------
+    // Begin main program Super Loop
     while(true)
     {
-        delay(300);
-
-        oled->display->setCursor(0, 0);
-        oled->display->println(rtc->mcp7940Lib->now().unixtime());
-
-        adxl->storeAccelXYZ();
-
-        int x = adxl->getX();
-        int y = adxl->getY();
-        int z = adxl->getZ();
-
-        oled->display->println(adxl->getZ());
-        oled->display->display();
-
-        double forces[3];
-
-        // adxl->adxlLib->printAllRegister();
-    }
-
-    // //---------------------------------------------------------------
-    // // Begin main program Super Loop
-    // while(true)
-    // {
-    //     noInterrupts();
+        noInterrupts();
         
-    //     //Volatile operation for transferring flags from ISRs to local main
-    //     localEventFlags |= globalEventFlags;
-    //     globalEventFlags = 0;
+        //Volatile operation for transferring flags from ISRs to local main
+        localEventFlags |= globalEventFlags;
+        globalEventFlags = 0;
 
-    //     //clearing global task flags for every device
-    //     for(int i = 0; i < Device::DEVICE_NUM; i++ )
-    //     {
-    //         localTaskFlags[i] |= globalTaskFlags[i];
-    //         globalTaskFlags[i] = 0;
-    //     }
+        //clearing global task flags for every device
+        for(int i = 0; i < Device::DEVICE_NUM; i++ )
+        {
+            localTaskFlags[i] |= globalTaskFlags[i];
+            globalTaskFlags[i] = 0;
+        }
 
-    //     interrupts();
+        interrupts();
 
-    //     //transfering timer event flags to local EF
-    //     localEventFlags |= timerEventFlags << 8;
+        //transfering timer event flags to local EF
+        localEventFlags |= timerEventFlags << 8;
 
 
-    //     //processing stage returns the next stage
-    //     localStage.processStage(&localEventFlags, localTaskFlags);
+        //processing stage returns the next stage
+        localStage.processStage(&localEventFlags, localTaskFlags);
 
-    //     //checking if we need to update the timers
-    //     if(localEventFlags & EF_TIMER)
-    //     {
-    //         //bit shifting the timer Task Flags (TFs) to the upper half of the localEF var
-    //         timerEventFlags |= localStage.processTimers();
+        //checking if we need to update the timers
+        if(localEventFlags & EF_TIMER)
+        {
+            //bit shifting the timer Task Flags (TFs) to the upper half of the localEF var
+            timerEventFlags |= localStage.processTimers();
             
-    //         //clearing the EF so we don't trigger this again
-    //         localEventFlags &= ~EF_TIMER;
-    //     }
+            //clearing the EF so we don't trigger this again
+            localEventFlags &= ~EF_TIMER;
+        }
 
-    // } //end while()
+    } //end while()
 
     return 0;
 }
