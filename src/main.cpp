@@ -44,11 +44,9 @@ int main(void)
     #endif
 
     Serial.begin(9600);
-    // while (!Serial) {
-    //     ; // wait for serial port to connect
-    // }
-
-    // delay(500);
+    while (!Serial) {
+        ; // wait for serial port to connect
+    }
 
     //disabling everything that I don't need
     power_all_disable();
@@ -66,13 +64,13 @@ int main(void)
     I2c* i2c          = I2c::getInstance();             //start the I2 first
     Eeprom* eeprom    = Eeprom::getInstance();
     Rtc* rtc          = Rtc::getInstance();
-    // Adxl* adxl        = Adxl::getInstance();
+    Adxl* adxl        = Adxl::getInstance();
     Oled* oled        = Oled::getInstance();
 
     i2c->init();       //initialize I2 first
     eeprom->init();
     rtc->init();
-    // adxl->init();
+    adxl->init();
     oled->init();
 
 
@@ -103,6 +101,12 @@ int main(void)
     // clock_prescale_set(clock_div_2);
 
 
+    delay(500);
+    
+    // adxl->adxlLib->printAllRegister();
+    // Serial.println(adxl->adxlLib->error_code);
+
+
     // //local instance of the Stage manager class
     // StageManager localStage = StageManager();
 
@@ -115,21 +119,23 @@ int main(void)
 
     while(true)
     {
-        delay(100);
+        delay(300);
 
         oled->display->setCursor(0, 0);
-        oled->display->print(rtc->mcp7940Lib->now().unixtime());
+        oled->display->println(rtc->mcp7940Lib->now().unixtime());
+
+        adxl->storeAccelXYZ();
+
+        int x = adxl->getX();
+        int y = adxl->getY();
+        int z = adxl->getZ();
+
+        oled->display->println(adxl->getZ());
         oled->display->display();
 
-        // adxl->storeAccelXYZ();
+        double forces[3];
 
-        // int x = adxl->getX();
-        // int y = adxl->getY();
-        // int z = adxl->getZ();
-
-        // Serial.println(x);
-        // Serial.println(y);
-        // Serial.println(z);
+        // adxl->adxlLib->printAllRegister();
     }
 
     // //---------------------------------------------------------------

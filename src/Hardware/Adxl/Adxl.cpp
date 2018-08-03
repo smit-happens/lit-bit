@@ -35,15 +35,19 @@ Adxl* Adxl::getInstance()
 void Adxl::init(void)
 {
     //setting the interrupt pin as an input
-    pinMode(LB_ADXL_INT1, INPUT);
+    // pinMode(LB_ADXL_INT1, INPUT);
 
     adxlLib = new ADXL345();
 
     // Power on the ADXL345
     adxlLib->powerOn();
 
+    delay(5);
+
     //set range to +- 4G
-    adxlLib->setRangeSetting(4); 
+    // adxlLib->setRangeSetting(4);
+
+    delay(5);
 
     //initialize the accel to 0 since no readings have been done
     xyz = new int[3];
@@ -52,6 +56,8 @@ void Adxl::init(void)
     // adxlLib->disableAllInterrupts();
 
     // adxlLib->enableFIFOMode();
+
+    //place adxl into measurement
 }
 
 
