@@ -83,15 +83,15 @@ int main(void)
                                             |___/                                   |_|
     */
     // Adxl interrupt
-    // attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
+    attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
 
     // start timer
     Timer1.initialize(1000);    //in usec
     Timer1.attachInterrupt(timerISR);
 
-    //check rate of the adxl
-    // Serial.println(adxl->adxlLib->getRate());
-    Serial.println(adxl->adxlLib->get_bw_code());
+    // adxl->adxlLib->printAllRegister();
+
+    // delay(1000);
 
     // // set the desired sleep mode
     // set_sleep_mode(SLEEP_MODE_PWR_DOWN);

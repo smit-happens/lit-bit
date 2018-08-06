@@ -35,83 +35,73 @@ Adxl* Adxl::getInstance()
 void Adxl::init(void)
 {
     //setting the interrupt pin as an input
-    // pinMode(LB_ADXL_INT1, INPUT);
+    pinMode(LB_ADXL_INT1, INPUT);
 
     adxlLib = new ADXL345();
 
     // Power on the ADXL345
     adxlLib->powerOn();
 
-    delay(5);
+    //set data rate to 50Hz
+    adxlLib->set_bw(ADXL345_BW_50);
 
-    //set range to +- 4G
+    //set measurement range to +- 4G
     adxlLib->setRangeSetting(4);
-
-    delay(5);
 
     //initialize the accel to 0 since no readings have been done
     xyz = new int[3];
 
-    //FIXME: testing code
-    // adxlLib->disableAllInterrupts();
+    //configure tap detection
+    setupTap();
 
-    // adxlLib->enableFIFOMode();
-
-    //place adxl into measurement
-
-    //transfer some interrupts to the other pin (ignore them)
+    //map the single tap interrupt to the int1 pin on the adxl
+    adxlLib->setInterruptMapping(ADXL345_INT_SINGLE_TAP_BIT, ADXL345_INT2_PIN);
     adxlLib->setInterruptMapping(ADXL345_INT_WATERMARK_BIT, ADXL345_INT2_PIN);
-    adxlLib->setInterruptMapping(ADXL345_INT_OVERRUNY_BIT, ADXL345_INT2_PIN);
-    // adxlLib->set
-}
 
+    setupFifo();
 
-/** 
- * @brief  Adxl destructor
- */
-Adxl::~Adxl(void)
-{
-    delete adxlLib;
-}
-
-
-void Adxl::getInterruptSource(void)
-{
-    //storing the interrupts that triggered in the adxl
-    uint8_t interruptStatus = adxlLib->getInterruptSource();
-
-    if(adxlLib->triggered(interruptStatus, ADXL345_SINGLE_TAP))
-    {
-        Serial.println("single tap");
-    }
-
-    if(adxlLib->triggered(interruptStatus, ADXL345_DATA_READY))
-    {
-        //trying to read the data in the data registers to clear the interrupt
-        storeAccelXYZ();
-    }
-
+    //enable the interrupts
+    adxlLib->singleTapINT(true);
+    adxlLib->waterMarkINT(true);
 }
 
 
 void Adxl::setupTap()
 {
-    //enable the single/double tap functionality
-    adxlLib->setTapDuration(5);
-    //set the tap threshold
-    adxlLib->setTapThreshold(5);
+    //enable the single/double tap functionality 625µs/LSB
+    adxlLib->setTapDuration(250);
+    //set the tap threshold 62.5 mg/LSB
+    adxlLib->setTapThreshold(220);
     //detect the taps on the Z axis 
     adxlLib->setTapDetectionOnZ(true);
-    //enable the interrupt for single tap
-    adxlLib->singleTapINT(true);
-    //map the single tap interrupt to the int1 pin on the adxl
-    adxlLib->setInterruptMapping(ADXL345_INT_SINGLE_TAP_BIT, ADXL345_INT1_PIN);
     //default interupt logic is active high
 }
 
-void Adxl::setupDataRate()
+
+void Adxl::setupFifo()
 {
-    
+    //enable fifo mode
+    adxlLib->enableFIFOMode();
+
+    //write number of samples needed to trigger watermark
+    adxlLib->writeWatermarkSamples(WATERMARK_SAMPLE_NUM);
+}
+
+
+void Adxl::readFifo(uint16_t* buffer)
+{
+    int fifoAmount = adxlLib->getFIFOcounts();
+
+    for(int i = 0; i < fifoAmount; i++ )
+    {
+        adxlLib->readAccel(xyz);
+
+        int temp =  (*getX() * *getX()) + (*getY() * *getY()) + (*getZ() * *getZ());
+
+        temp = sqrt(temp);
+
+        buffer[i] = temp;
+    }
 }
 
 
@@ -120,22 +110,3 @@ void Adxl::storeAccelXYZ(void)
     // adxlLib->get_Gxyz(xyz);
     adxlLib->readAccel(xyz);
 }
-
-
-int Adxl::getX()
-{
-    return xyz[0];
-}
-
-
-int Adxl::getY()
-{
-    return xyz[1];
-}
-
-
-int Adxl::getZ()
-{
-    return xyz[2];
-}
-

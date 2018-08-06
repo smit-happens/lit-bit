@@ -85,13 +85,13 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
         shutdown();
     }
 
-    // if(*eventFlags & EF_ADXL)
-    // {
-    //     processAdxl(taskFlags);
+    if(*eventFlags & EF_ADXL)
+    {
+        processAdxl(eventFlags, taskFlags);
         
-    //     //clearing the ADXL EF
-    //     *eventFlags &= ~EF_ADXL;
-    // }
+        //clearing the ADXL EF
+        *eventFlags &= ~EF_ADXL;
+    }
 
     if(*eventFlags & EF_RTC)
     {
@@ -99,15 +99,6 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
         
         //clearing the RTC EF
         *eventFlags &= ~EF_RTC;
-    }
-
-    //FIXME: temp code to allow timers to poll the adxl
-    if(*eventFlags & TIMER_F_ADXL << 8)
-    {
-        processAdxl(eventFlags, taskFlags);
-        
-        //clearing the Adxl timer EF
-        *eventFlags &= ~TIMER_F_ADXL;
     }
 
     if(*eventFlags & TIMER_F_EEPROM)
@@ -135,12 +126,28 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
  */
 void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
 {
-    adxl->getInterruptSource();
-    // int magnitude = adxl->getMagnitude();
-    // int z = adxl->getZ();
+    uint8_t AdxlInterrupts = adxl->adxlLib->getInterruptSource();
 
-    Serial.println("adxl processing function");
+    if(adxl->adxlLib->triggered(AdxlInterrupts, ADXL345_SINGLE_TAP))
+    {
+        // Serial.println("single tap");
+    }
 
+    if(adxl->adxlLib->triggered(AdxlInterrupts, ADXL345_WATERMARK))
+    {
+        uint16_t data[32] = { 0 };
+
+        //read all the values in the fifo
+        adxl->readFifo(data);
+
+        for(int i = 0; i < 32; i++)
+        {
+            Serial.println(data[i]);
+        }
+
+        // adxl->isStep(data);
+
+    }
 }
 
 
