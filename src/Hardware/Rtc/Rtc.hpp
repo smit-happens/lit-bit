@@ -11,12 +11,29 @@
 #define RTC_HPP
 
 #include <MCP7940.h>
+#include "../Constants/Port.hpp"
 
 
 class Rtc
 {
 public:
     MCP7940_Class* mcp7940Lib;
+
+    // Enumeration of alarm types
+    enum alarmTypes 
+    { 
+        matchSeconds, 
+        matchMinutes, 
+        matchHours, 
+        matchDayOfWeek,
+        matchDayOfMonth, 
+        Unused1, 
+        Unused2, 
+        matchAll, 
+        Unknown 
+    };
+
+    const uint8_t ALARM0_INTERVAL = 15;
 
     ~Rtc(void) {};
     static Rtc*   getInstance();

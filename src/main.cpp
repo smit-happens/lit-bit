@@ -32,6 +32,11 @@ void adxlISR() {
     globalEventFlags        |= EF_ADXL;
 }
 
+//configure rtc MFP interrupt
+void rtcISR() {
+    globalEventFlags        |= EF_RTC;
+}
+
 
 int main(void)
 {
@@ -84,6 +89,7 @@ int main(void)
     */
     // Adxl interrupt
     attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
+    attachInterrupt(LB_RTC_MFP, rtcISR, RISING);
 
     // start timer
     Timer1.initialize(1000);    //in usec

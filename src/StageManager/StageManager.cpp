@@ -17,11 +17,8 @@ StageManager::StageManager(void)
 {
     timerList = new Timer[TIMER_NUM];
     timerList[0].limit = POLL_TIME_OLED;
-    timerList[1].limit = POLL_TIME_ADXL;
-    
     
     timerList[0].TFmask = TIMER_F_OLED;
-    timerList[1].TFmask = TIMER_F_ADXL;
 
     //initializing the variables in the Timer array
     for(int i = 0; i < TIMER_NUM; i++) 
@@ -95,7 +92,7 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
 
     if(*eventFlags & EF_RTC)
     {
-        processRtc(taskFlags);
+        processRtc(eventFlags, taskFlags);
         
         //clearing the RTC EF
         *eventFlags &= ~EF_RTC;
@@ -147,12 +144,12 @@ void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
             {
                 // Serial.println(data[i]);
 
-                if(data[i] > 175)
+                if(data[i] > 175 && (downSwing == 0))
                 {
                     upSwing = 1;
                     // stepCount++;
                 }
-                else if (data[i] < 40)
+                else if (data[i] < 40 && (upSwing == 1))
                 {
                     downSwing = 1;
                 }
@@ -180,10 +177,23 @@ void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
  * @note   
  * @retval 
  */
-void StageManager::processRtc(uint8_t* taskFlags)
+void StageManager::processRtc(uint16_t* eventFlags, uint8_t* taskFlags)
 {
+    char inputBuffer[32];
+    
+    //technically this triggers constantly but we check to actually see if the alarm went off or not
+    if(rtc->mcp7940Lib->isAlarm(0))
+    {
+        DateTime now = rtc->mcp7940Lib->now();
+        sprintf(inputBuffer,"%04d-%02d-%02d %02d:%02d:%02d", now.year(),        // Use sprintf() to pretty print    //
+                now.month(), now.day(), now.hour(), now.minute(), now.second());// date/time with leading zeroes    //
+        Serial.println(inputBuffer);
+        // rtc->mcp7940Lib->clearAlarm(0);
+        rtc->mcp7940Lib->setAlarm(0, rtc->matchAll, now + TimeSpan(0, 0, rtc->ALARM0_INTERVAL, 0));
 
+        //TODO: set the eeprom EF and TF
 
+    }
 }
 
 
