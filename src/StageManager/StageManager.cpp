@@ -9,64 +9,6 @@
 #include "StageManager.hpp"
 
 
-
-/** 
- * @brief  StageManager constructor
- */
-StageManager::StageManager(void)
-{
-    timerList = new Timer[TIMER_NUM];
-    timerList[0].limit = POLL_TIME_OLED;
-    
-    timerList[0].TFmask = TIMER_F_OLED;
-
-    //initializing the variables in the Timer array
-    for(int i = 0; i < TIMER_NUM; i++) 
-    {
-        //creating the individual mask for each timer
-        timerList[i].count = 0;
-    }
-}
-
-
-/** 
- * @brief  Handles the multiple timers running off of a single 1ms timer from main
- * @note   Might have to be fleshed out more
- * @retval uint32_t with each bit coresponding to which timers went off
- */
-uint8_t StageManager::processTimers(void)
-{
-    //Goes through the array of timers to increment their count and store which ones popped
-    for (int i = 0; i < TIMER_NUM; i++)
-    {
-        timerList[i].count++;
-        if(timerList[i].count >= timerList[i].limit)
-        {
-            //store which timer popped
-            timerTF |= timerList[i].TFmask;
-
-            //resetting the count of the timer that just popped
-            timerList[i].count = 0;
-        }
-
-    }
-
-    return timerTF;
-}
-
-
-/** 
- * @brief  EXTREMELY CRITICAL FUNCTIONS
- * @note   
- * @retval None
- */
-void StageManager::shutdown()
-{
-    //Halt system 
-    while(1) {;}
-}
-
-
 /** 
  * @brief  Handles the event and task flags for each device
  * @note   
@@ -75,13 +17,8 @@ void StageManager::shutdown()
  * @param  taskFlags: 
  * @retval 
  */
-void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
+void StageManager::processStage(uint8_t* eventFlags, uint8_t* taskFlags)
 {
-    if(*eventFlags & EF_SHUTDOWN)
-    {
-        shutdown();
-    }
-
     if(*eventFlags & EF_ADXL)
     {
         processAdxl(eventFlags, taskFlags);
@@ -98,20 +35,20 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
         *eventFlags &= ~EF_RTC;
     }
 
-    if(*eventFlags & TIMER_F_EEPROM)
+    if(*eventFlags & EF_EEPROM)
     {
         processEeprom(taskFlags);
         
         //clearing the EEPROM EF
-        *eventFlags &= ~TIMER_F_EEPROM;
+        *eventFlags &= ~EF_EEPROM;
     }
 
-    if(*eventFlags & TIMER_F_OLED << 8)
+    if(*eventFlags & EF_OLED)
     {
         processOled(taskFlags);
         
         //clearing the OLED EF
-        *eventFlags &= ~TIMER_F_OLED;
+        *eventFlags &= ~EF_OLED;
     }
 }
 
@@ -121,7 +58,7 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
  * @note   
  * @retval 
  */
-void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
+void StageManager::processAdxl(uint8_t* eventFlags, uint8_t* taskFlags)
 {
     uint8_t AdxlInterrupts = adxl->adxlLib->getInterruptSource();
 
@@ -177,21 +114,23 @@ void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
  * @note   
  * @retval 
  */
-void StageManager::processRtc(uint16_t* eventFlags, uint8_t* taskFlags)
+void StageManager::processRtc(uint8_t* eventFlags, uint8_t* taskFlags)
 {
-    char inputBuffer[32];
+    // char inputBuffer[32];
     
     //technically this triggers constantly but we check to actually see if the alarm went off or not
     if(rtc->mcp7940Lib->isAlarm(0))
     {
         DateTime now = rtc->mcp7940Lib->now();
-        sprintf(inputBuffer,"%04d-%02d-%02d %02d:%02d:%02d", now.year(),        // Use sprintf() to pretty print    //
-                now.month(), now.day(), now.hour(), now.minute(), now.second());// date/time with leading zeroes    //
-        Serial.println(inputBuffer);
+        // sprintf(inputBuffer,"%04d-%02d-%02d %02d:%02d:%02d", now.year(),        // Use sprintf() to pretty print    //
+        //         now.month(), now.day(), now.hour(), now.minute(), now.second());// date/time with leading zeroes    //
+        // Serial.println(inputBuffer);
         // rtc->mcp7940Lib->clearAlarm(0);
         rtc->mcp7940Lib->setAlarm(0, rtc->matchAll, now + TimeSpan(0, 0, rtc->ALARM0_INTERVAL, 0));
 
-        //TODO: set the eeprom EF and TF
+        //TODO: set the eeprom EF and TF for storing the 15min step count
+        *eventFlags |= EF_EEPROM;
+        taskFlags[DEVICE_EEPROM] |= TF_EEPROM_15MIN_SAVE;
 
     }
 }

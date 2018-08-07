@@ -28,10 +28,12 @@ const uint8_t EF_TIMER             = 0b1;   //The first event flag (EF) mask
 const uint8_t EF_SHUTDOWN          = 0b10;  //Shutdown EF mask
 const uint8_t EF_ADXL              = 0b100;  //accelerometer EF mask
 const uint8_t EF_RTC               = 0b1000;  //RTC EF mask
+const uint8_t EF_EEPROM            = 0b10000;  //EEPROM EF mask
+const uint8_t EF_OLED              = 0b100000;  //OLED EF mask
 
-//Timer flags (the equivalent of an event flag but triggered by a timer)
-const uint8_t TIMER_F_OLED         = 0b1;  //OLED Timer mask
-const uint8_t TIMER_F_EEPROM       = 0b10;  //EEPROM Timer mask
+
+//task flags for eeprom
+const uint8_t TF_EEPROM_15MIN_SAVE            = 0b1;  //RTC EF mask
 
 
 //this enum is used as an index in the lookup table

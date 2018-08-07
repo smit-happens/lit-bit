@@ -7,7 +7,6 @@
  */
 
 #include <Arduino.h>
-#include <TimerOne.h>
 
 //AVR library imports
 #include <avr/sleep.h>
@@ -17,7 +16,7 @@
 
 
 //global variable that all the ISRs will flag for their respective event to run
-volatile uint16_t globalEventFlags = 0;
+volatile uint8_t globalEventFlags = 0;
 uint8_t globalTaskFlags [DEVICE_NUM] = { 0 };
 
 
@@ -57,7 +56,6 @@ int main(void)
     power_all_disable();
     power_twi_enable();
     power_timer0_enable();
-    power_timer1_enable();
     #ifdef DEBUG
         power_usb_enable();
     #endif
@@ -91,9 +89,6 @@ int main(void)
     attachInterrupt(LB_ADXL_INT1, adxlISR, RISING);
     attachInterrupt(LB_RTC_MFP, rtcISR, RISING);
 
-    // start timer
-    Timer1.initialize(1000);    //in usec
-    Timer1.attachInterrupt(timerISR);
 
     // adxl->adxlLib->printAllRegister();
 
@@ -114,9 +109,8 @@ int main(void)
     //local instance of the Stage manager class
     StageManager localStage = StageManager();
 
-    //initialize the local and timer event flag variables
-    uint16_t localEventFlags = 0;
-    uint8_t timerEventFlags = 0;
+    //initialize the local event flag variable
+    uint8_t localEventFlags = 0;
 
     //initialize task flag array to zero
     uint8_t localTaskFlags[DEVICE_NUM] = { 0 };
@@ -140,22 +134,9 @@ int main(void)
 
         interrupts();
 
-        //transfering timer event flags to local EF
-        localEventFlags |= timerEventFlags << 8;
-
 
         //processing stage returns the next stage
         localStage.processStage(&localEventFlags, localTaskFlags);
-
-        //checking if we need to update the timers
-        if(localEventFlags & EF_TIMER)
-        {
-            //bit shifting the timer Task Flags (TFs) to the upper half of the localEF var
-            timerEventFlags |= localStage.processTimers();
-            
-            //clearing the EF so we don't trigger this again
-            localEventFlags &= ~EF_TIMER;
-        }
 
     } //end while()
 
