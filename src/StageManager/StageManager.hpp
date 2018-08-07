@@ -38,13 +38,16 @@ private:
     Timer* timerList;
     uint8_t timerTF = 0;
 
+    uint16_t stepCount = 0;
+    bool upSwing = false;
+    bool downSwing = false;
+
     //local controller initialization
     I2c* i2c          = I2c::getInstance();
     Eeprom* eeprom    = Eeprom::getInstance();
     Rtc* rtc          = Rtc::getInstance();
     Adxl* adxl        = Adxl::getInstance();
     Oled* oled        = Oled::getInstance();
-    // Bluetooth* ble    = Bluetooth::getInstance();
 
 
     //Processing functions for the various devices

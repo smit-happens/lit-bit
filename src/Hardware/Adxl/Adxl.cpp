@@ -43,7 +43,7 @@ void Adxl::init(void)
     adxlLib->powerOn();
 
     //set data rate to 50Hz
-    adxlLib->set_bw(ADXL345_BW_50);
+    adxlLib->set_bw(ADXL345_BW_25);
 
     //set measurement range to +- 4G
     adxlLib->setRangeSetting(4);

@@ -131,6 +131,7 @@ void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
     if(adxl->adxlLib->triggered(AdxlInterrupts, ADXL345_SINGLE_TAP))
     {
         // Serial.println("single tap");
+        Serial.println(stepCount);
     }
 
     if(adxl->adxlLib->triggered(AdxlInterrupts, ADXL345_WATERMARK))
@@ -142,7 +143,30 @@ void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
 
         for(int i = 0; i < 32; i++)
         {
-            Serial.println(data[i]);
+            if(data[i] != 0)
+            {
+                // Serial.println(data[i]);
+
+                if(data[i] > 175)
+                {
+                    upSwing = 1;
+                    // stepCount++;
+                }
+                else if (data[i] < 40)
+                {
+                    downSwing = 1;
+                }
+
+                
+                if (upSwing == 1 && downSwing == 1) 
+                {
+                    stepCount++;
+                    upSwing = 0, downSwing = 0;
+                }
+                
+            }
+
+
         }
 
         // adxl->isStep(data);

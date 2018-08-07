@@ -48,7 +48,7 @@ private:
     
     int* xyz;
 
-    const byte WATERMARK_SAMPLE_NUM = 31;
+    const byte WATERMARK_SAMPLE_NUM = 30;
 
 };
 
