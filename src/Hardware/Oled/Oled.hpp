@@ -19,10 +19,15 @@ class Oled
 public:
     MicroOLED *display;
 
-    ~Oled(void);
+    ~Oled(void) {};
 
     static Oled*   getInstance();
     void init(void);
+
+    //sleeping functions 
+    //Note: the display saves what's in its buffer when it sleeps/wakes up
+    void sleep() { display->command(DISPLAYOFF); };
+    void wakeUp() { display->command(DISPLAYON); };
 
 
 private:

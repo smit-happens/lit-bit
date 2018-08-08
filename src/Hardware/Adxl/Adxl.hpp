@@ -18,19 +18,21 @@ class Adxl
 public:
     ADXL345* adxlLib;
 
-    ~Adxl(void);
+    ~Adxl(void) { delete adxlLib; };
     static Adxl*   getInstance();
     void init(void);
 
     void setupTap(void);
-    void setupDataRate();
+    void setupFifo();
 
     void storeAccelXYZ(void);
-    int getX(void);
-    int getY(void);
-    int getZ(void);
+    int* getX(void) { return xyz; };
+    int* getY(void) { return xyz +1; };
+    int* getZ(void) { return xyz +2; };
 
-    void getInterruptSource(void);
+    void readFifo(uint16_t* buffer);
+
+    void isStep(uint16_t* buffer);
 
     int getMagnitude(void);
     void printValues();
@@ -45,6 +47,8 @@ private:
     static Adxl* _pInstance;
     
     int* xyz;
+
+    const byte WATERMARK_SAMPLE_NUM = 30;
 
 };
 

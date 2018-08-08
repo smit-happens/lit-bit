@@ -19,21 +19,22 @@ const uint8_t BYTES_PER_PAGE = 128;
 class Eeprom
 {
 public:
-    //TODO: add the EEPROM IDs of the registers
-
-    ~Eeprom(void);
+    ~Eeprom(void) { };
     static Eeprom*   getInstance();
     void init();
 
-    int readByte(uint16_t readAddress);
+    uint8_t readByte(uint16_t readAddress);
     int writeByte(uint16_t writeAddress, uint8_t writeData);
 
-    int readPage();
-    int writePage();
-
-    int readCurrent();
     int readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* data);
-    int readRandom(uint16_t readAddress);    
+    int writeSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* writeData);
+
+    void writeEntry(uint32_t* unixtime, uint16_t* steps);
+    void printEntry(int entry = 0);
+
+    uint16_t getTotalSteps();
+    void setTotalSteps(uint16_t steps);
+    void addTotalSteps(uint16_t steps);
 
     void test();
 

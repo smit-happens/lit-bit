@@ -11,24 +11,36 @@
 #define RTC_HPP
 
 #include <MCP7940.h>
+#include "../Constants/Port.hpp"
 
 
 class Rtc
 {
 public:
-    ~Rtc(void);
+    MCP7940_Class* mcp7940Lib;
+
+    // Enumeration of alarm types
+    enum alarmTypes 
+    { 
+        matchSeconds, 
+        matchMinutes, 
+        matchHours, 
+        matchDayOfWeek,
+        matchDayOfMonth, 
+        Unused1, 
+        Unused2, 
+        matchAll, 
+        Unknown 
+    };
+
+    //FIXME: having it set for one minute for testing
+    const uint8_t ALARM0_INTERVAL = 15;
+
+    ~Rtc(void) {};
     static Rtc*   getInstance();
     void init(void);
 
-    /** 
-     * Drafting up possible functions
-     * 
-     * getDate()
-     * getTime()
-     * getDateTime()
-     */
 
-    //TODO: make alarm handling functions for the RTC
 
 private:
     //Private contstructor so that it can't be called
@@ -36,10 +48,7 @@ private:
     //copy constructor is private
     Rtc(Rtc const&) {};
     //static instance pointer
-    static Rtc* _pInstance;
-
-    MCP7940_Class* mcp7940Lib;
-    
+    static Rtc* _pInstance;    
 };
 
 

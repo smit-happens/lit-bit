@@ -198,10 +198,10 @@
         for (uint8_t i=0;i<sizeof(T);i++) Wire.write(*bytePtr++);             // loop for each byte to be written //
         _TransmissionStatus = Wire.endTransmission();                         // Close transmission               //
         return (!_TransmissionStatus);                                        // return error status              //
-      } // of method writeRAM()                                               //----------------------------------//
-    private:                                                                  // Private methods                  //
+      } // of method writeRAM()                                               //----------------------------------//                                                                // Private methods                  //
       uint8_t  readByte(const uint8_t addr);                                  // Read 1 byte from address on I2C  //
       void     writeByte(const uint8_t addr, const uint8_t data);             // Write 1 byte at address to I2C   //
+      private:  
       uint8_t  bcd2int(const uint8_t bcd);                                    // convert BCD digits to integer    //
       uint8_t  int2bcd(const uint8_t dec);                                    // convert integer to BCD           //
       uint8_t  _TransmissionStatus = 0;                                       // Status of I2C transmission       //

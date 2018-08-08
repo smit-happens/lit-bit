@@ -17,7 +17,6 @@
 #include "I2c/I2c.hpp"
 #include "Oled/Oled.hpp"
 #include "Rtc/Rtc.hpp"
-#include "Bluetooth/Bluetooth.hpp"
 
 
 #endif  //HARDWARE_HPP

@@ -114,7 +114,7 @@ void loop() {                                                                 //
               now.month(), now.day(), now.hour(), now.minute(), now.second());// date/time with leading zeroes    //
       Serial.print(inputBuffer);                                              // Display the current date/time    //
       MCP7940.setAlarm(1,matchAll,now);                                       // Set alarm to go off in 10s again //
-    } // of if Alarm 0 has been triggered                                     // Alarm is cleared when resetting  //
+    } // of if Alarm 1 has been triggered                                     // Alarm is cleared when resetting  //
     Serial.println();                                                         //                                  //
   } // of if the seconds have changed                                         //                                  //
 } // of method loop()                                                         //----------------------------------//

@@ -9,67 +9,6 @@
 #include "StageManager.hpp"
 
 
-
-/** 
- * @brief  StageManager constructor
- */
-StageManager::StageManager(void)
-{
-    timerList = new Timer[TIMER_NUM];
-    timerList[0].limit = POLL_TIME_OLED;
-    timerList[1].limit = POLL_TIME_ADXL;
-    
-    
-    timerList[0].TFmask = TIMER_F_OLED;
-    timerList[1].TFmask = TIMER_F_ADXL;
-
-    //initializing the variables in the Timer array
-    for(int i = 0; i < TIMER_NUM; i++) 
-    {
-        //creating the individual mask for each timer
-        timerList[i].count = 0;
-    }
-}
-
-
-/** 
- * @brief  Handles the multiple timers running off of a single 1ms timer from main
- * @note   Might have to be fleshed out more
- * @retval uint32_t with each bit coresponding to which timers went off
- */
-uint8_t StageManager::processTimers(void)
-{
-    //Goes through the array of timers to increment their count and store which ones popped
-    for (int i = 0; i < TIMER_NUM; i++)
-    {
-        timerList[i].count++;
-        if(timerList[i].count >= timerList[i].limit)
-        {
-            //store which timer popped
-            timerTF |= timerList[i].TFmask;
-
-            //resetting the count of the timer that just popped
-            timerList[i].count = 0;
-        }
-
-    }
-
-    return timerTF;
-}
-
-
-/** 
- * @brief  EXTREMELY CRITICAL FUNCTIONS
- * @note   
- * @retval None
- */
-void StageManager::shutdown()
-{
-    //Halt system 
-    while(1) {;}
-}
-
-
 /** 
  * @brief  Handles the event and task flags for each device
  * @note   
@@ -78,60 +17,38 @@ void StageManager::shutdown()
  * @param  taskFlags: 
  * @retval 
  */
-void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
+void StageManager::processStage(uint8_t* eventFlags, uint8_t* taskFlags)
 {
-    if(*eventFlags & EF_SHUTDOWN)
+    if(*eventFlags & EF_ADXL)
     {
-        shutdown();
-    }
-
-    // if(*eventFlags & EF_ADXL)
-    // {
-    //     processAdxl(taskFlags);
+        processAdxl(eventFlags, taskFlags);
         
-    //     //clearing the ADXL EF
-    //     *eventFlags &= ~EF_ADXL;
-    // }
+        //clearing the ADXL EF
+        *eventFlags &= ~EF_ADXL;
+    }
 
     if(*eventFlags & EF_RTC)
     {
-        processRtc(taskFlags);
+        processRtc(eventFlags, taskFlags);
         
         //clearing the RTC EF
         *eventFlags &= ~EF_RTC;
     }
 
-    //FIXME: temp code to allow timers to poll the adxl
-    if(*eventFlags & TIMER_F_ADXL << 8)
-    {
-        processAdxl(eventFlags, taskFlags);
-        
-        //clearing the Adxl timer EF
-        *eventFlags &= ~TIMER_F_ADXL;
-    }
-
-    if(*eventFlags & EF_BLE)
-    {
-        processBle(taskFlags);
-        
-        //clearing the BLE EF
-        *eventFlags &= ~EF_BLE;
-    }
-
-    if(*eventFlags & TIMER_F_EEPROM)
+    if(*eventFlags & EF_EEPROM)
     {
         processEeprom(taskFlags);
         
         //clearing the EEPROM EF
-        *eventFlags &= ~TIMER_F_EEPROM;
+        *eventFlags &= ~EF_EEPROM;
     }
 
-    if(*eventFlags & TIMER_F_OLED << 8)
+    if(*eventFlags & EF_OLED)
     {
         processOled(taskFlags);
         
         //clearing the OLED EF
-        *eventFlags &= ~TIMER_F_OLED;
+        *eventFlags &= ~EF_OLED;
     }
 }
 
@@ -141,133 +58,75 @@ void StageManager::processStage(uint16_t* eventFlags, uint8_t* taskFlags)
  * @note   
  * @retval 
  */
-void StageManager::processAdxl(uint16_t* eventFlags, uint8_t* taskFlags)
+void StageManager::processAdxl(uint8_t* eventFlags, uint8_t* taskFlags)
 {
-    adxl->getInterruptSource();
-    // int magnitude = adxl->getMagnitude();
-    // int z = adxl->getZ();
+    uint8_t AdxlInterrupts = adxl->adxlLib->getInterruptSource();
 
-    // Serial.println(magnitude);
+    if(adxl->adxlLib->triggered(AdxlInterrupts, ADXL345_SINGLE_TAP))
+    {
+        //set display EF & TF to go off
+        *eventFlags |= EF_OLED;
+        taskFlags[DEVICE_OLED] |= TF_OLED_STEP;
+    }
+
+    if(adxl->adxlLib->triggered(AdxlInterrupts, ADXL345_WATERMARK))
+    {
+        uint16_t data[32] = { 0 };
+
+        //read all the values in the fifo
+        adxl->readFifo(data);
+
+        for(int i = 0; i < 32; i++)
+        {
+            if(data[i] != 0)
+            {
+                // Serial.println(data[i]);
+
+                if(data[i] > 55000 && (downSwing == 0))
+                {
+                    upSwing = 1;
+                }
+                else if (data[i] < 5000 && (upSwing == 1))
+                {
+                    downSwing = 1;
+                }
+
+                
+                if (upSwing == 1 && downSwing == 1) 
+                {
+                    stepCount++;
+                    upSwing = 0, downSwing = 0;
+                }
+                
+            }
+        }
+    }
+}
+
+
+/** 
+ * @brief  
+ * @note   
+ * @retval 
+ */
+void StageManager::processRtc(uint8_t* eventFlags, uint8_t* taskFlags)
+{
+    // char inputBuffer[32];
     
-    // adxl->printValues();
-
-    //need to activate the event & task flag of ble to have it trigger
-    *eventFlags |= EF_BLE; 
-    taskFlags[DEVICE_BLE] |= TF_BLE_TX;
-}
-
-
-/** 
- * @brief  
- * @note   
- * @retval 
- */
-void StageManager::processRtc(uint8_t* taskFlags)
-{
-
-
-}
-
-
-/** 
- * @brief  
- * @note   
- * @retval 
- */
-void StageManager::processBle(uint8_t* taskFlags)
-{
-    //local bluetooth lib reference
-    Adafruit_BLE_UART* BleLib = ble->bluetooth;
-    //local oled reference
-    MicroOLED* oledLib = oled->display;
-
-    if(taskFlags[DEVICE_BLE] & TF_BLE_ACI)
+    //technically this triggers constantly but we check to actually see if the alarm went off or not
+    if(rtc->mcp7940Lib->isAlarm(0))
     {
-        aci_evt_opcode_t status = BleLib->getState();
+        DateTime now = rtc->mcp7940Lib->now();
+        // sprintf(inputBuffer,"%04d-%02d-%02d %02d:%02d:%02d", now.year(),        // Use sprintf() to pretty print    //
+        //         now.month(), now.day(), now.hour(), now.minute(), now.second());// date/time with leading zeroes    //
+        // Serial.println(inputBuffer);
+        // rtc->mcp7940Lib->clearAlarm(0);
+        rtc->mcp7940Lib->setAlarm(0, rtc->matchAll, now + TimeSpan(0, 0, rtc->ALARM0_INTERVAL, 0));
 
-        switch(status)
-        {
-            case ACI_EVT_DEVICE_STARTED:
-                Serial.println(F("Advertising started"));
-            break;
+        *eventFlags |= EF_EEPROM;
+        taskFlags[DEVICE_EEPROM] |= TF_EEPROM_15MIN_SAVE;
 
-            case ACI_EVT_CONNECTED:
-                Serial.println(F("Connected!"));
-            break;
-
-            case ACI_EVT_DISCONNECTED:
-                Serial.println(F("Disconnected or advertising timed out"));
-            break;
-
-            case ACI_EVT_DATA_RECEIVED:
-                //TODO: see if this ever triggers
-            break;
-
-            default:
-            break;
-        }
-        //reset the taskflag
-        taskFlags[DEVICE_BLE] &= ~TF_BLE_ACI;
     }
-
-    //perform if we receive any data over BLE
-    if(taskFlags[DEVICE_BLE] & TF_BLE_RX)
-    {
-        oledLib->clear(PAGE);
-        oledLib->setCursor(0,0);
-
-        // //reading in one char at a time
-        while (BleLib->available()) {
-            char c = BleLib->read();
-            Serial.print(c);
-            
-            oledLib->write(c);
-        }
-        Serial.println();
-        
-
-        // char* seqToSearchFor = "LB";
-        // char* output = NULL;
-        // output = strstr((char*)ble->localBleBuffer, seqToSearchFor);
-
-        // if(output)
-        //     oledLib->println("cmd recieved!");
-        // else
-        // {
-        //     // for(int i =0; i < ble->localBleBufferLength; i++)
-        //     //     oledLib->write(ble->localBleBuffer[i]);
-        //         while (BleLib->available()) {
-        //             char c = BleLib->read();
-        //             Serial.print(c);
-                    
-        //             oledLib->write(c);
-        //         }
-
-        // }
-
-
-        //update display
-        oledLib->display();
-
-        //reset the taskflag
-        taskFlags[DEVICE_BLE] &= ~TF_BLE_RX;
-    }
-
-    //perform if we need to transmit data over BLE
-    if(taskFlags[DEVICE_BLE] & TF_BLE_TX)
-    {
-        //check if we're connected to a BLE device
-        if(BleLib->getState() == ACI_EVT_CONNECTED)
-        {
-            char c[10];
-            itoa(adxl->getZ(), c, 10);
-            BleLib->println(c);
-        }
-        
-        //reset the taskflag
-        taskFlags[DEVICE_BLE] &= ~TF_BLE_TX; 
-    }
-
 }
 
 
@@ -278,8 +137,20 @@ void StageManager::processBle(uint8_t* taskFlags)
  */
 void StageManager::processEeprom(uint8_t* taskFlags)
 {
+    if(taskFlags[DEVICE_EEPROM] & TF_EEPROM_15MIN_SAVE)
+    {
+        uint32_t nowUnix = rtc->mcp7940Lib->now().unixtime();
 
+        eeprom->writeEntry(&nowUnix, &stepCount);
 
+        eeprom->addTotalSteps(stepCount);
+
+        //reset count for next interval
+        stepCount = 0;
+
+        //clear the task flag
+        taskFlags[DEVICE_EEPROM] &= ~TF_EEPROM_15MIN_SAVE;
+    }
 }
 
 
@@ -290,7 +161,31 @@ void StageManager::processEeprom(uint8_t* taskFlags)
  */
 void StageManager::processOled(uint8_t* taskFlags)
 {
-    //glcd view display updating
-    // GlcdController::getInstance()->poll(); //will flush buffer if required.
-    return;
+    if(taskFlags[DEVICE_OLED] & TF_OLED_STEP)
+    {
+        //glcd view display updating
+        oled->wakeUp();
+        oled->display->setCursor(0, 0);
+        oled->display->print("15min: ");
+        oled->display->println(stepCount);
+        oled->display->print("Total: ");
+        oled->display->println(eeprom->getTotalSteps());
+        oled->display->display();
+
+        wdt_enable(WDTO_1S);
+
+        WDTCSR |= 0x1 << 6;
+
+        taskFlags[DEVICE_OLED] &= ~TF_OLED_STEP;        
+    }
+
+    if(taskFlags[DEVICE_OLED] & TF_OLED_TIMEOUT)
+    {
+        oled->sleep();
+
+        wdt_disable();
+
+        taskFlags[DEVICE_OLED] &= ~TF_OLED_TIMEOUT;
+    }
+    
 }
