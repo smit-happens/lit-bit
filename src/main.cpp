@@ -88,6 +88,11 @@ int main(void)
     adxl->init();
     oled->init();
 
+    // Serial.println("data dump:");
+
+    // for(int i = 0; i< 10; i++)
+    //     eeprom->printEntry(i);
+
     //incase you need to reset stats
     // eeprom->writeByte(0x1FFFF, 0);
     // eeprom->writeByte(0x1FFFD, 0);

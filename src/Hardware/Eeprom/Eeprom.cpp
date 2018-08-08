@@ -191,6 +191,29 @@ void Eeprom::writeEntry(uint32_t* unixtime, uint16_t* steps)
 }
 
 
+void Eeprom::printEntry(int entry)
+{
+    //zero initialize data array
+    uint8_t data[6] = { 0 };
+
+    uint8_t start = 0 + entry;
+    uint8_t end = 5 + entry;
+
+    readSequential(start, end, data);
+
+    uint32_t unixNow = data[0] << 24 | data[1] << 16 | data[2] << 8 | data[3];
+
+    uint16_t steps = data[4] << 8 | data[5];
+
+    Serial.print("time: ");
+    Serial.println(unixNow);
+
+    Serial.print("steps: ");
+    Serial.println(steps);
+
+}
+
+
 uint16_t Eeprom::getTotalSteps()
 {
     uint16_t totalSteps = (readByte(0x1FFFB) << 8) | readByte(0x1FFF9);

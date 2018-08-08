@@ -30,6 +30,7 @@ public:
     int writeSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* writeData);
 
     void writeEntry(uint32_t* unixtime, uint16_t* steps);
+    void printEntry(int entry = 0);
 
     uint16_t getTotalSteps();
     void setTotalSteps(uint16_t steps);
