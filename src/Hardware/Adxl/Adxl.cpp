@@ -71,7 +71,7 @@ void Adxl::setupTap()
     //enable the single/double tap functionality 625µs/LSB
     adxlLib->setTapDuration(250);
     //set the tap threshold 62.5 mg/LSB
-    adxlLib->setTapThreshold(220);
+    adxlLib->setTapThreshold(200);
     //detect the taps on the Z axis 
     adxlLib->setTapDetectionOnZ(true);
     //default interupt logic is active high
@@ -97,8 +97,6 @@ void Adxl::readFifo(uint16_t* buffer)
         adxlLib->readAccel(xyz);
 
         int temp =  (*getX() * *getX()) + (*getY() * *getY()) + (*getZ() * *getZ());
-
-        temp = sqrt(temp);
 
         buffer[i] = temp;
     }

@@ -64,9 +64,7 @@ void StageManager::processAdxl(uint8_t* eventFlags, uint8_t* taskFlags)
 
     if(adxl->adxlLib->triggered(AdxlInterrupts, ADXL345_SINGLE_TAP))
     {
-        // Serial.println(stepCount);
-
-        //TODO: set display EF to go off
+        //set display EF & TF to go off
         *eventFlags |= EF_OLED;
         taskFlags[DEVICE_OLED] |= TF_OLED_STEP;
     }
@@ -84,11 +82,11 @@ void StageManager::processAdxl(uint8_t* eventFlags, uint8_t* taskFlags)
             {
                 // Serial.println(data[i]);
 
-                if(data[i] > 175 && (downSwing == 0))
+                if(data[i] > 55000 && (downSwing == 0))
                 {
                     upSwing = 1;
                 }
-                else if (data[i] < 40 && (upSwing == 1))
+                else if (data[i] < 5000 && (upSwing == 1))
                 {
                     downSwing = 1;
                 }
@@ -101,12 +99,7 @@ void StageManager::processAdxl(uint8_t* eventFlags, uint8_t* taskFlags)
                 }
                 
             }
-
-
         }
-
-        // adxl->isStep(data);
-
     }
 }
 

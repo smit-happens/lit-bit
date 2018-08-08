@@ -56,10 +56,13 @@ int main(void)
         USBDevice.attach();
     #endif
 
-    Serial.begin(9600);
-    // while (!Serial) {
-    //     ; // wait for serial port to connect
-    // }
+    #ifdef DEBUG
+        Serial.begin(9600);
+        // while (!Serial) {
+        //     ; // wait for serial port to connect
+        // }
+    #endif
+
 
     //disabling everything that I don't need
     power_all_disable();

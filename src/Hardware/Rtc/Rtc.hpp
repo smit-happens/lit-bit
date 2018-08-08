@@ -34,23 +34,13 @@ public:
     };
 
     //FIXME: having it set for one minute for testing
-    const uint8_t ALARM0_INTERVAL = 1;
+    const uint8_t ALARM0_INTERVAL = 15;
 
     ~Rtc(void) {};
     static Rtc*   getInstance();
     void init(void);
 
-    /** 
-     * Drafting up possible functions
-     * 
-     * getDate()
-     * getTime()
-     * getDateTime()
-     * rtc->mcp7940Lib->now().unixtime();
-     * 
-     */
 
-    //TODO: make alarm handling functions for the RTC
 
 private:
     //Private contstructor so that it can't be called
