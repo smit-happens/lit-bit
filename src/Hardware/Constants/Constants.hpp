@@ -33,7 +33,11 @@ const uint8_t EF_OLED              = 0b100000;  //OLED EF mask
 
 
 //task flags for eeprom
-const uint8_t TF_EEPROM_15MIN_SAVE            = 0b1;  //RTC EF mask
+const uint8_t TF_EEPROM_15MIN_SAVE      = 0b1;  //saving step entry TF
+
+//OLED TFs
+const uint8_t TF_OLED_STEP              = 0b1; //displaying steps
+const uint8_t TF_OLED_TIMEOUT           = 0b10; //sleeping display
 
 
 //this enum is used as an index in the lookup table

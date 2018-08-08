@@ -11,19 +11,20 @@
 
 #include "../Hardware/Hardware.hpp"
 #include "../Hardware/Constants/Constants.hpp"
+#include <avr/wdt.h>
 
 
 class StageManager
 {
 public:
     StageManager() { };
-    
 
     //handles the excecution of the various stages
     void processStage(uint8_t* eventFlags, uint8_t* taskFlags);
 
 
 private:
+    uint16_t totalCount = 0;
 
     uint16_t stepCount = 0;
     bool upSwing = false;

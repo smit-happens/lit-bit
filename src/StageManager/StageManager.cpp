@@ -64,8 +64,11 @@ void StageManager::processAdxl(uint8_t* eventFlags, uint8_t* taskFlags)
 
     if(adxl->adxlLib->triggered(AdxlInterrupts, ADXL345_SINGLE_TAP))
     {
-        // Serial.println("single tap");
-        Serial.println(stepCount);
+        // Serial.println(stepCount);
+
+        //TODO: set display EF to go off
+        *eventFlags |= EF_OLED;
+        taskFlags[DEVICE_OLED] |= TF_OLED_STEP;
     }
 
     if(adxl->adxlLib->triggered(AdxlInterrupts, ADXL345_WATERMARK))
@@ -84,7 +87,6 @@ void StageManager::processAdxl(uint8_t* eventFlags, uint8_t* taskFlags)
                 if(data[i] > 175 && (downSwing == 0))
                 {
                     upSwing = 1;
-                    // stepCount++;
                 }
                 else if (data[i] < 40 && (upSwing == 1))
                 {
@@ -165,7 +167,28 @@ void StageManager::processEeprom(uint8_t* taskFlags)
  */
 void StageManager::processOled(uint8_t* taskFlags)
 {
-    //glcd view display updating
-    // GlcdController::getInstance()->poll(); //will flush buffer if required.
-    // Serial.println("oled function");
+    if(taskFlags[DEVICE_OLED] & TF_OLED_STEP)
+    {
+        //glcd view display updating
+        oled->wakeUp();
+        oled->display->setCursor(0, 0);
+        oled->display->print(stepCount);
+        oled->display->display();
+
+        wdt_enable(WDTO_1S);
+
+        WDTCSR |= 0x1 << 6;
+
+        taskFlags[DEVICE_OLED] &= ~TF_OLED_STEP;        
+    }
+
+    if(taskFlags[DEVICE_OLED] & TF_OLED_TIMEOUT)
+    {
+        oled->sleep();
+
+        wdt_disable();
+
+        taskFlags[DEVICE_OLED] &= ~TF_OLED_TIMEOUT;
+    }
+    
 }
