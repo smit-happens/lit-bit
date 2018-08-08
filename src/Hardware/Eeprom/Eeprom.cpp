@@ -34,8 +34,9 @@ Eeprom* Eeprom::getInstance()
  */
 void Eeprom::init(void)
 {
-    //TODO: should take value from internal EEPROM
-    _lastAddressAccessed = 0;
+    //retreive address of teh last entry written to EEPROM
+    _lastAddressAccessed = (readByte(0x1FFFF) << 8) | readByte(0x1FFFD);
+    
 }
 
 
@@ -59,9 +60,9 @@ int Eeprom::writeByte(uint16_t writeAddress, uint8_t writeData)
 }
 
 
-int Eeprom::readByte(uint16_t readAddress)
+uint8_t Eeprom::readByte(uint16_t readAddress)
 {
-    int readData;
+    uint8_t readData;
     
     //start comms with EEPROM
     Wire.beginTransmission(EEPROM24_ADDR);
@@ -78,10 +79,6 @@ int Eeprom::readByte(uint16_t readAddress)
 
         while( Wire.available() )
             readData = Wire.read();
-    }
-    else 
-    {  
-        readData = -1;     //error
     }
 
     return readData;
@@ -187,8 +184,31 @@ void Eeprom::writeEntry(uint32_t* unixtime, uint16_t* steps)
 
     _lastAddressAccessed = endAddress;
 
-    //TODO: store last address accessed to internal EEPROM
+    //store last address accessed to EEPROM
+    writeByte(0x1FFFF, _lastAddressAccessed >> 8);
+    writeByte(0x1FFFD, _lastAddressAccessed);
 
+}
+
+
+uint16_t Eeprom::getTotalSteps()
+{
+    uint16_t totalSteps = (readByte(0x1FFFB) << 8) | readByte(0x1FFF9);
+
+    return totalSteps;
+}
+
+
+void Eeprom::setTotalSteps(uint16_t steps)
+{
+    writeByte(0x1FFFB, steps >> 8);
+    writeByte(0x1FFF9, steps);
+}
+
+
+void Eeprom::addTotalSteps(uint16_t steps)
+{
+    setTotalSteps(getTotalSteps() + steps);
 }
 
 

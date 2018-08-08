@@ -123,7 +123,6 @@ void StageManager::processRtc(uint8_t* eventFlags, uint8_t* taskFlags)
         // rtc->mcp7940Lib->clearAlarm(0);
         rtc->mcp7940Lib->setAlarm(0, rtc->matchAll, now + TimeSpan(0, 0, rtc->ALARM0_INTERVAL, 0));
 
-        //TODO: set the eeprom EF and TF for storing the 15min step count
         *eventFlags |= EF_EEPROM;
         taskFlags[DEVICE_EEPROM] |= TF_EEPROM_15MIN_SAVE;
 
@@ -143,6 +142,8 @@ void StageManager::processEeprom(uint8_t* taskFlags)
         uint32_t nowUnix = rtc->mcp7940Lib->now().unixtime();
 
         eeprom->writeEntry(&nowUnix, &stepCount);
+
+        eeprom->addTotalSteps(stepCount);
 
         //reset count for next interval
         stepCount = 0;
@@ -165,7 +166,10 @@ void StageManager::processOled(uint8_t* taskFlags)
         //glcd view display updating
         oled->wakeUp();
         oled->display->setCursor(0, 0);
-        oled->display->print(stepCount);
+        oled->display->print("15min: ");
+        oled->display->println(stepCount);
+        oled->display->print("Total: ");
+        oled->display->println(eeprom->getTotalSteps());
         oled->display->display();
 
         wdt_enable(WDTO_1S);

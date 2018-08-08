@@ -88,6 +88,12 @@ int main(void)
     adxl->init();
     oled->init();
 
+    //incase you need to reset stats
+    eeprom->writeByte(0x1FFFF, 0);
+    eeprom->writeByte(0x1FFFD, 0);
+    eeprom->writeByte(0x1FFFB, 0);
+    eeprom->writeByte(0x1FFF9, 0);
+
 
     /*
             _   _             _     _                _       _                             _

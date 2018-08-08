@@ -24,8 +24,6 @@ public:
 
 
 private:
-    uint16_t totalCount = 0;
-
     uint16_t stepCount = 0;
     bool upSwing = false;
     bool downSwing = false;
