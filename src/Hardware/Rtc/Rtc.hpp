@@ -33,7 +33,8 @@ public:
         Unknown 
     };
 
-    const uint8_t ALARM0_INTERVAL = 15;
+    //FIXME: having it set for one minute for testing
+    const uint8_t ALARM0_INTERVAL = 1;
 
     ~Rtc(void) {};
     static Rtc*   getInstance();

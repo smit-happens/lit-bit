@@ -143,7 +143,11 @@ void StageManager::processRtc(uint8_t* eventFlags, uint8_t* taskFlags)
  */
 void StageManager::processEeprom(uint8_t* taskFlags)
 {
+    uint32_t nowUnix = rtc->mcp7940Lib->now().unixtime();
+
     //TODO: store amount of steps and current time
+    Serial.println(nowUnix);
+
 
     //TODO: store last location in itsy EEPROM
 

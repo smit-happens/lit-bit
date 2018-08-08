@@ -31,6 +31,8 @@ public:
     int readSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* data);
     int writeSequential(uint16_t startAddress, uint16_t endAddress, uint8_t* writeData);
 
+    void writeEntry(uint32_t* unixtime, uint16_t* steps);
+
     void test();
 
 private:
