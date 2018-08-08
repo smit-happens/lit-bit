@@ -28,22 +28,14 @@ Eeprom* Eeprom::getInstance()
 
 
 /** 
- * @brief  Eeprom destructor
- */
-Eeprom::~Eeprom(void)
-{
-
-}
-
-
-/** 
  * @brief  
  * @note   
  * @retval 
  */
 void Eeprom::init(void)
 {
-
+    //TODO: should take value from internal EEPROM
+    _lastAddressAccessed = 0;
 }
 
 
@@ -172,6 +164,31 @@ int Eeprom::writeSequential(uint16_t startAddress, uint16_t endAddress, uint8_t*
     delay(5);       //need to wait for the EEPROM chip to finish writing
 
     return error;
+}
+
+
+void Eeprom::writeEntry(uint32_t* unixtime, uint16_t* steps)
+{
+    //zero initialize data array
+    uint8_t data[6] = { 0 };
+
+    data[0] = *unixtime >> 24;
+    data[1] = *unixtime >> 16;
+    data[2] = *unixtime >> 8;
+    data[3] = *unixtime;
+
+    data[4] = *steps >> 8;
+    data[5] = *steps;
+
+    uint16_t startAddress = _lastAddressAccessed + 1;
+    uint16_t endAddress = startAddress + 6;
+
+    writeSequential(startAddress, endAddress, data);
+
+    _lastAddressAccessed = endAddress;
+
+    //TODO: store last address accessed to internal EEPROM
+
 }
 
 

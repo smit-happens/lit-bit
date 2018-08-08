@@ -11,6 +11,7 @@
 
 #include <Wire.h>
 #include <Arduino.h>
+#include <EEPROM.h>
 
 const uint8_t EEPROM24_ADDR = B10100000 >> 1;    // seven-bit address of the chip
 const uint8_t BYTES_PER_PAGE = 128;
@@ -21,7 +22,7 @@ class Eeprom
 public:
     //TODO: add the EEPROM IDs of the registers
 
-    ~Eeprom(void);
+    ~Eeprom(void) { };
     static Eeprom*   getInstance();
     void init();
 

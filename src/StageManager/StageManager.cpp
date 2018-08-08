@@ -143,14 +143,18 @@ void StageManager::processRtc(uint8_t* eventFlags, uint8_t* taskFlags)
  */
 void StageManager::processEeprom(uint8_t* taskFlags)
 {
-    uint32_t nowUnix = rtc->mcp7940Lib->now().unixtime();
+    if(taskFlags[DEVICE_EEPROM] & TF_EEPROM_15MIN_SAVE)
+    {
+        uint32_t nowUnix = rtc->mcp7940Lib->now().unixtime();
 
-    //TODO: store amount of steps and current time
-    Serial.println(nowUnix);
+        eeprom->writeEntry(&nowUnix, &stepCount);
 
+        //reset count for next interval
+        stepCount = 0;
 
-    //TODO: store last location in itsy EEPROM
-
+        //clear the task flag
+        taskFlags[DEVICE_EEPROM] &= ~TF_EEPROM_15MIN_SAVE;
+    }
 }
 
 

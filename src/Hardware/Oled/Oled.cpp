@@ -40,8 +40,6 @@ void Oled::init(void)
     // initialize the glcd and set the contrast to 0x18
     display->begin();       // Initialize the OLED
     display->clear(ALL);    // Clear the display's internal memory
-    display->display();     // Display what's in the buffer (splashscreen)
-    delay(500);             // Delay
     display->clear(PAGE);   // Clear the buffer.
-    // sleep();                // Put display to sleep until needed
+    sleep();                // Put display to sleep until needed
 }
